@@ -1,19 +1,19 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>SkiRoute</title>
+<body>
+  <div id="map"></div>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
+  <div class="top-bar">
+    <div class="estacion">Navacerrada</div>
+  </div>
 
-  <body>
-    <h2 id="titulo-estacion"></h2>
+  <div class="bottom-panel">
+    <div class="panel-handle"></div>
 
-    <div id="map"></div>
+    <div class="panel-content">
+      <input placeholder="Buscar pista o remonte..." />
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="js/mapa.js"></script>
-  </body>
-</html>
+      <button id="btnOrigen">Seleccionar origen</button>
+
+      <button id="btnDestino">Seleccionar destino</button>
+    </div>
+  </div>
+</body>
