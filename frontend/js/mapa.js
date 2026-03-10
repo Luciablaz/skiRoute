@@ -16,13 +16,24 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // función para colorear pistas
 function estiloPista(feature) {
   const dificultad = feature.properties.dificultad;
+  const tipo = feature.properties.tipo_tramo;
 
+  // remontes
+  if (tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina") {
+    return {
+      color: "gray",
+      weight: 3,
+      dashArray: "5,5",
+    };
+  }
+
+  // pistas
   let color = "gray";
 
-  if (dificultad === "verde") color = "green";
-  if (dificultad === "azul") color = "blue";
-  if (dificultad === "roja") color = "red";
-  if (dificultad === "negra") color = "black";
+  if (dificultad === "Verde") color = "green";
+  if (dificultad === "Azul") color = "blue";
+  if (dificultad === "Roja") color = "red";
+  if (dificultad === "Negra") color = "black";
 
   return {
     color: color,
