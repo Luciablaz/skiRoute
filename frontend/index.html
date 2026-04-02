@@ -1,21 +1,54 @@
 <!doctype html>
-<html>
+<html lang="es">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkiRoute</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
 
   <body>
-    <h1>SkiRoute</h1>
-    <h3>Selecciona una estación</h3>
+    <div class="landing">
+      <div class="landing-hero">
+        <div class="landing-logo">SkiRoute</div>
+        <h1 class="landing-title">Encuentra tu<br>ruta perfecta</h1>
+        <p class="landing-subtitle">Planifica tu descenso en las mejores estaciones de esquí de Madrid</p>
+      </div>
 
-    <div class="estaciones">
-      <button onclick="seleccionar('valdesqui')">Valdesquí</button>
+      <div class="landing-divider"></div>
 
-      <button onclick="seleccionar('navacerrada')">
-        Puerto de Navacerrada
-      </button>
+      <p class="landing-section-title">Selecciona estación</p>
+
+      <div class="estaciones">
+        <button class="card-estacion" onclick="seleccionar('valdesqui')">
+          <div class="card-icono">⛷️</div>
+          <div class="card-info">
+            <div class="card-nombre">Valdesquí</div>
+            <div class="card-meta">Rascafría, Madrid</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+        <button class="card-estacion" onclick="seleccionar('navacerrada')">
+          <div class="card-icono">🏔️</div>
+          <div class="card-info">
+            <div class="card-nombre">Puerto de Navacerrada</div>
+            <div class="card-meta">Navacerrada, Madrid</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+      </div>
     </div>
 
     <script src="js/selector_estacion.js"></script>

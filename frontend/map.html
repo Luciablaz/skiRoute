@@ -1,19 +1,60 @@
-<body>
-  <div id="map"></div>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkiRoute - Mapa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
 
-  <div class="top-bar">
-    <div class="estacion">Navacerrada</div>
-  </div>
+  <body>
+    <div id="map"></div>
 
-  <div class="bottom-panel">
-    <div class="panel-handle"></div>
-
-    <div class="panel-content">
-      <input placeholder="Buscar pista o remonte..." />
-
-      <button id="btnOrigen">Seleccionar origen</button>
-
-      <button id="btnDestino">Seleccionar destino</button>
+    <div class="top-bar">
+      <button class="btn-back" onclick="history.back()">‹</button>
+      <div class="top-bar-card">
+        <span class="estacion-nombre" id="titulo-estacion">Cargando...</span>
+      </div>
     </div>
-  </div>
-</body>
+
+    <div class="bottom-panel">
+      <div class="panel-handle"></div>
+
+      <div class="panel-actions">
+        <button class="btn-punto btn-origen" id="btnOrigen">
+          <span>●</span> Origen
+        </button>
+        <button class="btn-punto btn-destino" id="btnDestino">
+          <span>●</span> Destino
+        </button>
+      </div>
+
+      <div class="leyenda">
+        <div class="leyenda-item">
+          <div class="leyenda-linea" style="background:#4ade80"></div>
+          <span>Verde</span>
+        </div>
+        <div class="leyenda-item">
+          <div class="leyenda-linea" style="background:#60a5fa"></div>
+          <span>Azul</span>
+        </div>
+        <div class="leyenda-item">
+          <div class="leyenda-linea" style="background:#f87171"></div>
+          <span>Roja</span>
+        </div>
+        <div class="leyenda-item">
+          <div class="leyenda-linea" style="background:#e2e8f0"></div>
+          <span>Negra</span>
+        </div>
+        <div class="leyenda-item">
+          <div class="leyenda-remonte"></div>
+          <span>Remonte</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/mapa.js"></script>
+  </body>
+</html>

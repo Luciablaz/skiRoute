@@ -1,45 +1,349 @@
-html,
-body {
-  height: 100%;
+/* ===========================
+   RESET & BASE
+   =========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
-  font-family: system-ui;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #0b0f1a;
+  color: #f0f4ff;
   overflow: hidden;
 }
 
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+/* ===========================
+   LANDING PAGE
+   =========================== */
+.landing {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #0b1628 0%, #0d2340 40%, #0b0f1a 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 32px;
+  text-align: center;
+}
+
+.landing-logo {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #60a5fa;
+  margin-bottom: 16px;
+}
+
+.landing-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: #f0f4ff;
+  margin-bottom: 12px;
+}
+
+.landing-subtitle {
+  font-size: 16px;
+  color: #8899bb;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.landing-divider {
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #60a5fa, #818cf8);
+  border-radius: 2px;
+  margin: 32px auto 28px;
+}
+
+.landing-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #4b5a7a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Station cards */
+.estaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 48px;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.card-estacion {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 20px;
   width: 100%;
 }
 
-.top-bar {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 10px 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+.card-estacion:hover,
+.card-estacion:focus {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(96, 165, 250, 0.12);
+  outline: none;
 }
 
+.card-estacion:active {
+  transform: translateY(0);
+}
+
+.card-icono {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-nombre {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f0f4ff;
+  margin-bottom: 4px;
+}
+
+.card-meta {
+  font-size: 13px;
+  color: #6677aa;
+  margin-bottom: 12px;
+}
+
+.card-dificultades {
+  display: flex;
+  gap: 6px;
+}
+
+.badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.badge-verde  { background: #4ade80; }
+.badge-azul   { background: #60a5fa; }
+.badge-roja   { background: #f87171; }
+.badge-negra  { background: #e2e8f0; }
+
+.card-arrow {
+  font-size: 20px;
+  color: #4b5a7a;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   MAP PAGE
+   =========================== */
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Top bar */
+.top-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.btn-back {
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #f0f4ff;
+  font-size: 18px;
+  pointer-events: all;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+.top-bar-card {
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px 16px;
+  pointer-events: all;
+}
+
+.top-bar-card .estacion-nombre {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f0f4ff;
+}
+
+/* Bottom panel */
 .bottom-panel {
   position: absolute;
   bottom: 0;
-  width: 100%;
-  background: white;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
-  padding: 16px;
+  left: 0;
+  right: 0;
+  background: rgba(11, 15, 26, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px 32px;
   z-index: 1000;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
 }
 
 .panel-handle {
-  width: 40px;
-  height: 5px;
-  background: #ccc;
-  border-radius: 3px;
-  margin: 0 auto 10px auto;
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-punto {
+  flex: 1;
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-origen {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.btn-origen:hover {
+  background: rgba(74, 222, 128, 0.25);
+}
+
+.btn-destino {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
+.btn-destino:hover {
+  background: rgba(248, 113, 113, 0.25);
+}
+
+/* Legend */
+.leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8899bb;
+}
+
+.leyenda-linea {
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.leyenda-remonte {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #fbbf24 0px,
+    #fbbf24 5px,
+    transparent 5px,
+    transparent 9px
+  );
+}
+
+/* ===========================
+   LEAFLET OVERRIDES
+   =========================== */
+.leaflet-control-attribution {
+  background: rgba(11, 15, 26, 0.7) !important;
+  color: #4b5a7a !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #60a5fa !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(11, 15, 26, 0.85) !important;
+  color: #f0f4ff !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(96, 165, 250, 0.2) !important;
 }

@@ -1,16 +1,32 @@
 // obtener estación desde la URL
 const params = new URLSearchParams(window.location.search);
-const estacion = params.get("estacion");
+const estacion = params.get("estacion") || "valdesqui";
 
-// título
-document.getElementById("titulo-estacion").innerText = "Estación: " + estacion;
+// centros por estación
+const centros = {
+  valdesqui:    [40.790, -3.970],
+  navacerrada:  [40.783, -4.013],
+};
 
-// crear mapa centrado en Valdesquí (luego lo automatizaremos)
-var map = L.map("map").setView([40.79, -3.97], 14);
+// nombres legibles
+const nombres = {
+  valdesqui:   "Valdesquí",
+  navacerrada: "Puerto de Navacerrada",
+};
 
-// capa base
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "© OpenStreetMap",
+// título en la barra superior
+document.getElementById("titulo-estacion").innerText = nombres[estacion] || estacion;
+
+// crear mapa
+const centro = centros[estacion] || [40.790, -3.970];
+const map = L.map("map", { zoomControl: true }).setView(centro, 14);
+
+// capa base oscura (CartoDB Dark Matter — gratuita, sin API key)
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: "abcd",
+  maxZoom: 19,
 }).addTo(map);
 
 // función para colorear pistas
@@ -18,26 +34,21 @@ function estiloPista(feature) {
   const dificultad = feature.properties.dificultad;
   const tipo = feature.properties.tipo_tramo;
 
-  // remontes
   if (tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina") {
-    return {
-      color: "gray",
-      weight: 3,
-      dashArray: "5,5",
-    };
+    return { color: "#fbbf24", weight: 2, dashArray: "5,5", opacity: 0.8 };
   }
 
-  // pistas
-  let color = "gray";
-
-  if (dificultad === "Verde") color = "green";
-  if (dificultad === "Azul") color = "blue";
-  if (dificultad === "Roja") color = "red";
-  if (dificultad === "Negra") color = "black";
+  const colores = {
+    Verde: "#4ade80",
+    Azul:  "#60a5fa",
+    Roja:  "#f87171",
+    Negra: "#e2e8f0",
+  };
 
   return {
-    color: color,
+    color: colores[dificultad] || "#8899bb",
     weight: 4,
+    opacity: 0.9,
   };
 }
 
@@ -45,7 +56,5 @@ function estiloPista(feature) {
 fetch("data/" + estacion + "/tramos.geojson")
   .then((res) => res.json())
   .then((data) => {
-    L.geoJSON(data, {
-      style: estiloPista,
-    }).addTo(map);
+    L.geoJSON(data, { style: estiloPista }).addTo(map);
   });
