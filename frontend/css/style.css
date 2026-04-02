@@ -319,13 +319,7 @@ html, body {
   width: 24px;
   height: 3px;
   border-radius: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    #9ca3af 0px,
-    #9ca3af 5px,
-    transparent 5px,
-    transparent 9px
-  );
+  background: #9ca3af;
 }
 
 /* ===========================

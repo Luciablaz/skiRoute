@@ -35,7 +35,7 @@ function estiloPista(feature) {
   const tipo = feature.properties.tipo_tramo;
 
   if (tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina") {
-    return { color: "#9ca3af", weight: 2, dashArray: "5,5", opacity: 0.9 };
+    return { color: "#9ca3af", weight: 3, opacity: 0.8 };
   }
 
   const colores = {
