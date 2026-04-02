@@ -22,12 +22,18 @@
       <div class="panel-handle"></div>
 
       <div class="panel-actions">
-        <button class="btn-punto btn-origen" id="btnOrigen">
-          <span>●</span> Origen
-        </button>
-        <button class="btn-punto btn-destino" id="btnDestino">
-          <span>●</span> Destino
-        </button>
+        <div class="punto-row" id="rowOrigen">
+          <span class="punto-dot dot-origen">●</span>
+          <input type="text" id="inputOrigen" class="punto-input" placeholder="Origen..." autocomplete="off">
+          <button class="btn-clear" id="clearOrigen">×</button>
+          <div class="autocomplete-dropdown" id="dropOrigen"></div>
+        </div>
+        <div class="punto-row" id="rowDestino">
+          <span class="punto-dot dot-destino">●</span>
+          <input type="text" id="inputDestino" class="punto-input" placeholder="Destino..." autocomplete="off">
+          <button class="btn-clear" id="clearDestino">×</button>
+          <div class="autocomplete-dropdown" id="dropDestino"></div>
+        </div>
       </div>
 
       <div class="leyenda">
