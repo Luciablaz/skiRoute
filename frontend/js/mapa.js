@@ -28,6 +28,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 let modoActivo = null; // 'origen' | 'destino' | null
 let seleccion       = { origen: null, destino: null };
 let capasResaltadas = { origen: null, destino: null };
+let marcadores      = { origen: null, destino: null };
 let todosLosTramos  = [];
 let capaGeoJSON     = null;
 
@@ -50,14 +51,50 @@ function estiloPista(feature) {
   return { color: colores[dificultad] || "#8899bb", weight: 4, opacity: 0.9 };
 }
 
-function estiloResaltado(feature, modo) {
-  const base = estiloPista(feature);
+const coloresBrillantes = {
+  Verde: "#4ade80",
+  Azul:  "#60a5fa",
+  Roja:  "#f87171",
+  Negra: "#6b7280",
+};
+
+function estiloResaltado(feature) {
+  const base       = estiloPista(feature);
+  const dificultad = feature.properties.dificultad;
+  const tipo       = feature.properties.tipo_tramo;
+  const esRemonteFn = tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina";
+
   return {
     ...base,
-    color:  modo === "origen" ? "#22c55e" : "#ef4444",
-    weight: base.weight + 3,
+    color:  esRemonteFn ? "#d1d5db" : (coloresBrillantes[dificultad] || base.color),
+    weight: base.weight + 5,
     opacity: 1,
   };
+}
+
+// ── Marcadores A / B ─────────────────────────────────────────────────────────
+function puntoMedio(feature) {
+  const coords = feature.geometry.coordinates;
+  const mid    = coords[Math.floor(coords.length / 2)];
+  return [mid[1], mid[0]];
+}
+
+function crearMarcador(feature, modo) {
+  const letra = modo === "origen" ? "A" : "B";
+  const icon  = L.divIcon({
+    className: "",
+    html: `<div class="marcador-seleccion marcador-${modo}">${letra}</div>`,
+    iconSize:   [26, 26],
+    iconAnchor: [13, 13],
+  });
+  return L.marker(puntoMedio(feature), { icon, interactive: false }).addTo(map);
+}
+
+function quitarMarcador(modo) {
+  if (marcadores[modo]) {
+    map.removeLayer(marcadores[modo]);
+    marcadores[modo] = null;
+  }
 }
 
 // ── Modo selección ───────────────────────────────────────────────────────────
@@ -85,14 +122,16 @@ function seleccionarTramo(feature, layer) {
   if (!modoActivo) return;
   const modo = modoActivo;
 
-  // quitar resaltado anterior del mismo slot
+  // quitar resaltado y marcador anterior del mismo slot
   if (capasResaltadas[modo]) {
     capaGeoJSON.resetStyle(capasResaltadas[modo]);
   }
+  quitarMarcador(modo);
 
-  layer.setStyle(estiloResaltado(feature, modo));
+  layer.setStyle(estiloResaltado(feature));
   layer.bringToFront();
   capasResaltadas[modo] = layer;
+  marcadores[modo]      = crearMarcador(feature, modo);
   seleccion[modo]       = feature;
 
   const inputId = modo === "origen" ? "inputOrigen" : "inputDestino";
@@ -172,6 +211,7 @@ document.getElementById("inputDestino").addEventListener("input", e => {
 document.getElementById("clearOrigen").addEventListener("click", () => {
   document.getElementById("inputOrigen").value = "";
   if (capasResaltadas.origen) { capaGeoJSON.resetStyle(capasResaltadas.origen); capasResaltadas.origen = null; }
+  quitarMarcador("origen");
   seleccion.origen = null;
   cerrarDropdowns();
   actualizarBotonCalcular();
@@ -179,6 +219,7 @@ document.getElementById("clearOrigen").addEventListener("click", () => {
 document.getElementById("clearDestino").addEventListener("click", () => {
   document.getElementById("inputDestino").value = "";
   if (capasResaltadas.destino) { capaGeoJSON.resetStyle(capasResaltadas.destino); capasResaltadas.destino = null; }
+  quitarMarcador("destino");
   seleccion.destino = null;
   cerrarDropdowns();
   actualizarBotonCalcular();
