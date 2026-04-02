@@ -76,6 +76,11 @@ function desactivarModo() {
 }
 
 // ── Seleccionar tramo ────────────────────────────────────────────────────────
+function actualizarBotonCalcular() {
+  const btn = document.getElementById("btnCalcular");
+  btn.style.display = (seleccion.origen && seleccion.destino) ? "block" : "none";
+}
+
 function seleccionarTramo(feature, layer) {
   if (!modoActivo) return;
   const modo = modoActivo;
@@ -95,6 +100,7 @@ function seleccionarTramo(feature, layer) {
 
   cerrarDropdowns();
   desactivarModo();
+  actualizarBotonCalcular();
 }
 
 // ── Autocomplete ─────────────────────────────────────────────────────────────
@@ -168,12 +174,14 @@ document.getElementById("clearOrigen").addEventListener("click", () => {
   if (capasResaltadas.origen) { capaGeoJSON.resetStyle(capasResaltadas.origen); capasResaltadas.origen = null; }
   seleccion.origen = null;
   cerrarDropdowns();
+  actualizarBotonCalcular();
 });
 document.getElementById("clearDestino").addEventListener("click", () => {
   document.getElementById("inputDestino").value = "";
   if (capasResaltadas.destino) { capaGeoJSON.resetStyle(capasResaltadas.destino); capasResaltadas.destino = null; }
   seleccion.destino = null;
   cerrarDropdowns();
+  actualizarBotonCalcular();
 });
 
 // cerrar al clicar fuera del panel
