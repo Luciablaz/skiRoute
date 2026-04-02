@@ -238,6 +238,73 @@ map.on("click", () => {
   if (modoActivo) { desactivarModo(); cerrarDropdowns(); }
 });
 
+// ── Calcular y pintar ruta ───────────────────────────────────────────────────
+const API_URL = "http://localhost:8001";
+let capaRuta  = null;
+
+document.getElementById("btnCalcular").addEventListener("click", async () => {
+  const btn = document.getElementById("btnCalcular");
+  btn.disabled    = true;
+  btn.textContent = "Calculando…";
+
+  const idOrigen  = seleccion.origen?.properties?.id_tramo;
+  const idDestino = seleccion.destino?.properties?.id_tramo;
+
+  if (!idOrigen || !idDestino) {
+    alert("Selecciona origen y destino antes de calcular.");
+    btn.disabled    = false;
+    btn.textContent = "Calcular ruta";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/ruta`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ id_tramo_origen: idOrigen, id_tramo_destino: idDestino }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert("Error: " + (err.detail || "No se pudo calcular la ruta"));
+      return;
+    }
+
+    const data = await res.json();
+    pintarRuta(data.ruta, data.distancia);
+  } catch (e) {
+    alert("No se pudo conectar con el servidor. ¿Está el backend corriendo?");
+    console.error(e);
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = "Calcular ruta";
+  }
+});
+
+function pintarRuta(puntos, distancia) {
+  // Eliminar ruta anterior si existe
+  if (capaRuta) { map.removeLayer(capaRuta); capaRuta = null; }
+
+  const latlngs = puntos.map(p => [p.lat, p.lng]);
+
+  capaRuta = L.polyline(latlngs, {
+    color:     "#f59e0b",
+    weight:    6,
+    opacity:   0.95,
+    lineJoin:  "round",
+    lineCap:   "round",
+  }).addTo(map);
+
+  map.fitBounds(capaRuta.getBounds(), { padding: [40, 40] });
+
+  // Mostrar distancia en el panel
+  const info = document.getElementById("infoRuta");
+  if (info) {
+    info.textContent = `Distancia: ${(distancia / 1000).toFixed(2)} km`;
+    info.style.display = "block";
+  }
+}
+
 // ── Cargar GeoJSON ───────────────────────────────────────────────────────────
 fetch("data/" + estacion + "/tramos.geojson")
   .then(res => res.json())
