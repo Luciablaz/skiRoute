@@ -21,8 +21,8 @@ document.getElementById("titulo-estacion").innerText = nombres[estacion] || esta
 const centro = centros[estacion] || [40.790, -3.970];
 const map = L.map("map", { zoomControl: true }).setView(centro, 14);
 
-// capa base oscura (CartoDB Dark Matter — gratuita, sin API key)
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+// capa base clara (CartoDB Positron — gratuita, sin API key)
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   subdomains: "abcd",
@@ -35,14 +35,14 @@ function estiloPista(feature) {
   const tipo = feature.properties.tipo_tramo;
 
   if (tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina") {
-    return { color: "#fbbf24", weight: 2, dashArray: "5,5", opacity: 0.8 };
+    return { color: "#9ca3af", weight: 2, dashArray: "5,5", opacity: 0.9 };
   }
 
   const colores = {
-    Verde: "#4ade80",
-    Azul:  "#60a5fa",
-    Roja:  "#f87171",
-    Negra: "#e2e8f0",
+    Verde: "#16a34a",
+    Azul:  "#2563eb",
+    Roja:  "#dc2626",
+    Negra: "#111111",
   };
 
   return {
