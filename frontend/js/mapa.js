@@ -240,7 +240,7 @@ map.on("click", () => {
 
 // ── Calcular y pintar ruta ───────────────────────────────────────────────────
 const API_URL = "http://localhost:8001";
-let capaRuta  = null;
+let capasRuta = []; // layers resaltadas de la ruta
 
 document.getElementById("btnCalcular").addEventListener("click", async () => {
   const btn = document.getElementById("btnCalcular");
@@ -271,7 +271,7 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
     }
 
     const data = await res.json();
-    pintarRuta(data.ruta, data.distancia);
+    pintarRuta(data.tramos, data.distancia);
   } catch (e) {
     alert("No se pudo conectar con el servidor. ¿Está el backend corriendo?");
     console.error(e);
@@ -281,28 +281,60 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
   }
 });
 
-function pintarRuta(puntos, distancia) {
-  // Eliminar ruta anterior si existe
-  if (capaRuta) { map.removeLayer(capaRuta); capaRuta = null; }
+function limpiarRuta() {
+  capasRuta.forEach(layer => capaGeoJSON.resetStyle(layer));
+  capasRuta = [];
+  const itinerario = document.getElementById("itinerario");
+  if (itinerario) itinerario.style.display = "none";
+}
 
-  const latlngs = puntos.map(p => [p.lat, p.lng]);
+function pintarRuta(tramos, distancia) {
+  limpiarRuta();
 
-  capaRuta = L.polyline(latlngs, {
-    color:     "#f59e0b",
-    weight:    6,
-    opacity:   0.95,
-    lineJoin:  "round",
-    lineCap:   "round",
-  }).addTo(map);
+  const idsRuta = new Set(tramos.map(t => t.id_tramo));
 
-  map.fitBounds(capaRuta.getBounds(), { padding: [40, 40] });
+  // Resaltar los tramos del GeoJSON que forman la ruta
+  capaGeoJSON.eachLayer(layer => {
+    const id = layer.feature?.properties?.id_tramo;
+    if (idsRuta.has(id)) {
+      layer.setStyle({ color: "#f59e0b", weight: 8, opacity: 1 });
+      layer.bringToFront();
+      capasRuta.push(layer);
+    }
+  });
 
-  // Mostrar distancia en el panel
-  const info = document.getElementById("infoRuta");
-  if (info) {
-    info.textContent = `Distancia: ${(distancia / 1000).toFixed(2)} km`;
-    info.style.display = "block";
-  }
+  // Mostrar itinerario en el panel
+  mostrarItinerario(tramos, distancia);
+}
+
+function mostrarItinerario(tramos, distancia) {
+  const contenedor = document.getElementById("itinerario");
+  const lista      = document.getElementById("itinerarioLista");
+  const dist       = document.getElementById("itinerarioDistancia");
+
+  lista.innerHTML = "";
+
+  tramos.forEach((t, i) => {
+    // Buscar el nombre en el GeoJSON
+    const feature = todosLosTramos.find(f => f.properties.id_tramo === t.id_tramo);
+    const nombre  = feature?.properties?.nombre || t.id_tramo;
+    const esRemonte = t.tipo_tramo === "telesilla" || t.tipo_tramo === "telesqui" || t.tipo_tramo === "telecabina";
+    const dif     = (t.dificultad || "").toLowerCase();
+
+    const paso = document.createElement("div");
+    paso.className = "itinerario-paso";
+    paso.innerHTML = `
+      <span class="paso-num">${i + 1}</span>
+      <span class="paso-icono">${esRemonte ? "⬆" : "⬇"}</span>
+      <span class="paso-nombre">${nombre}</span>
+      ${!esRemonte && t.dificultad ? `<span class="drop-badge badge-${dif}">${t.dificultad}</span>` : ""}
+      ${esRemonte ? `<span class="drop-badge badge-remonte">Remonte</span>` : ""}
+    `;
+    lista.appendChild(paso);
+  });
+
+  dist.textContent = `Distancia total: ${(distancia / 1000).toFixed(2)} km`;
+  contenedor.style.display = "block";
 }
 
 // ── Cargar GeoJSON ───────────────────────────────────────────────────────────
