@@ -78,9 +78,9 @@ def calcular_ruta(req: RutaRequest):
         raise HTTPException(404, f"Tramo origen no encontrado: {req.id_tramo_origen}")
     nodo_origen = row[0]
 
-    # Nodo de fin del tramo destino
+    # Nodo de inicio del tramo destino (punto de entrada: cima en pistas, base en remontes)
     cur.execute(
-        "SELECT nodo_fin FROM conexiones WHERE id_tramo = %s ORDER BY id DESC LIMIT 1",
+        "SELECT nodo_inicio FROM conexiones WHERE id_tramo = %s LIMIT 1",
         (req.id_tramo_destino,)
     )
     row = cur.fetchone()
