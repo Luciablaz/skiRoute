@@ -30,7 +30,7 @@ def construir_grafo():
     cur.execute("SELECT id_nodo, ST_X(geometry), ST_Y(geometry) FROM nodos")
     nodos = cur.fetchall()
 
-    cur.execute("SELECT nodo_inicio, nodo_fin, longitud FROM conexiones")
+    cur.execute("SELECT nodo_inicio, nodo_fin, id_tramo, tipo_tramo, dificultad, longitud FROM conexiones")
     conexiones = cur.fetchall()
 
     cur.close()
@@ -39,8 +39,9 @@ def construir_grafo():
     G = nx.DiGraph()
     for nodo, x, y in nodos:
         G.add_node(nodo, pos=(x, y))
-    for inicio, fin, longitud in conexiones:
-        G.add_edge(inicio, fin, weight=longitud)
+    for inicio, fin, id_tramo, tipo_tramo, dificultad, longitud in conexiones:
+        G.add_edge(inicio, fin, weight=longitud,
+                   id_tramo=id_tramo, tipo_tramo=tipo_tramo, dificultad=dificultad)
 
     return G
 
@@ -107,14 +108,21 @@ def calcular_ruta(req: RutaRequest):
     except nx.NodeNotFound as e:
         raise HTTPException(404, str(e))
 
-    # Coordenadas de cada nodo de la ruta
-    puntos = []
-    for nodo_id in ruta:
-        x, y = grafo.nodes[nodo_id]["pos"]
-        puntos.append({"id": nodo_id, "lat": y, "lng": x})
+    # Secuencia de tramos (sin repetir tramos consecutivos iguales)
+    tramos_ruta = []
+    vistos = set()
+    for i in range(len(ruta) - 1):
+        edge = grafo[ruta[i]][ruta[i + 1]]
+        id_tramo = edge["id_tramo"]
+        if id_tramo not in vistos:
+            vistos.add(id_tramo)
+            tramos_ruta.append({
+                "id_tramo":   id_tramo,
+                "tipo_tramo": edge["tipo_tramo"],
+                "dificultad": edge["dificultad"],
+            })
 
     return {
-        "ruta":      puntos,
+        "tramos":    tramos_ruta,
         "distancia": round(distancia, 2),
-        "n_nodos":   len(ruta),
     }
