@@ -318,17 +318,19 @@ function mostrarItinerario(tramos, distancia) {
     // Buscar el nombre en el GeoJSON
     const feature = todosLosTramos.find(f => f.properties.id_tramo === t.id_tramo);
     const nombre  = feature?.properties?.nombre || t.id_tramo;
-    const esRemonte = t.tipo_tramo === "telesilla" || t.tipo_tramo === "telesqui" || t.tipo_tramo === "telecabina";
-    const dif     = (t.dificultad || "").toLowerCase();
+    const tipoLower = (t.tipo_tramo || "").toLowerCase();
+    const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(tipoLower);
+    const dif       = (t.dificultad || "").toLowerCase();
 
     const paso = document.createElement("div");
     paso.className = "itinerario-paso";
     paso.innerHTML = `
       <span class="paso-num">${i + 1}</span>
-      <span class="paso-icono">${esRemonte ? "⬆" : "⬇"}</span>
+      <span class="paso-icono ${esRemonte ? "icono-sube" : "icono-baja"}">${esRemonte ? "▲" : "▼"}</span>
       <span class="paso-nombre">${nombre}</span>
-      ${!esRemonte && t.dificultad ? `<span class="drop-badge badge-${dif}">${t.dificultad}</span>` : ""}
-      ${esRemonte ? `<span class="drop-badge badge-remonte">Remonte</span>` : ""}
+      ${esRemonte
+        ? `<span class="drop-badge badge-remonte">${t.tipo_tramo}</span>`
+        : t.dificultad ? `<span class="drop-badge badge-${dif}">${t.dificultad}</span>` : ""}
     `;
     lista.appendChild(paso);
   });
