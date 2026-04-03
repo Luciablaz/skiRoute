@@ -68,9 +68,9 @@ def calcular_ruta(req: RutaRequest):
     conn = get_conn()
     cur  = conn.cursor()
 
-    # Nodo de inicio del tramo origen
+    # Nodo fin del tramo origen (punto de salida: base de pista o cima de remonte)
     cur.execute(
-        "SELECT nodo_inicio FROM conexiones WHERE id_tramo = %s LIMIT 1",
+        "SELECT nodo_fin FROM conexiones WHERE id_tramo = %s ORDER BY id DESC LIMIT 1",
         (req.id_tramo_origen,)
     )
     row = cur.fetchone()
