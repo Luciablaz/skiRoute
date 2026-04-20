@@ -5,11 +5,13 @@ const estacion = params.get("estacion") || "valdesqui";
 const centros = {
   valdesqui:   [40.790, -3.970],
   navacerrada: [40.783, -4.013],
+  cerler:      [42.570,  0.560],
 };
 
 const nombres = {
   valdesqui:   "Valdesquí",
   navacerrada: "Puerto de Navacerrada",
+  cerler:      "Cerler",
 };
 
 document.getElementById("titulo-estacion").innerText = nombres[estacion] || estacion;
