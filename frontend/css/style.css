@@ -551,6 +551,56 @@ html, body {
 .marcador-origen  { background: #2563eb; }
 .marcador-destino { background: #7c3aed; }
 
+/* ── Aviso cierre remontes ── */
+.aviso-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.aviso-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px 24px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+.aviso-icono {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.aviso-texto {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a2e;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.aviso-btn {
+  width: 100%;
+  padding: 13px;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.aviso-btn:hover { background: #d97706; }
+
 /* ===========================
    LEAFLET OVERRIDES
    =========================== */
