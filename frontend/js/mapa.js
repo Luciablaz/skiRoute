@@ -250,9 +250,19 @@ document.querySelectorAll(".btn-dif").forEach(btn => {
   });
 });
 
+// ── Modal de error ───────────────────────────────────────────────────────────
+function mostrarError(texto) {
+  document.getElementById("errorTexto").innerText = texto;
+  document.getElementById("errorOverlay").style.display = "flex";
+}
+
+document.getElementById("errorBtn").addEventListener("click", () => {
+  document.getElementById("errorOverlay").style.display = "none";
+});
+
 // ── Calcular y pintar ruta ───────────────────────────────────────────────────
 const API_URL = "http://localhost:8001";
-let capasRuta = []; // layers resaltadas de la ruta
+let capasRuta = [];
 
 document.getElementById("btnCalcular").addEventListener("click", async () => {
   const btn = document.getElementById("btnCalcular");
@@ -263,7 +273,7 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
   const idDestino = seleccion.destino?.properties?.id_tramo;
 
   if (!idOrigen || !idDestino) {
-    alert("Selecciona origen y destino antes de calcular.");
+    mostrarError("Selecciona un origen y un destino antes de calcular la ruta.");
     btn.disabled    = false;
     btn.textContent = "Calcular ruta";
     return;
@@ -278,14 +288,20 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
 
     if (!res.ok) {
       const err = await res.json();
-      alert("Error: " + (err.detail || "No se pudo calcular la ruta"));
+      const detalle = err.detail || "No se pudo calcular la ruta.";
+      const esNoRuta = detalle.toLowerCase().includes("no existe ruta");
+      mostrarError(
+        esNoRuta
+          ? "No existe una ruta posible entre los puntos seleccionados con la dificultad máxima elegida.\n\nPrueba a cambiar el origen, el destino o ampliar la dificultad máxima."
+          : detalle
+      );
       return;
     }
 
     const data = await res.json();
     pintarRuta(data.tramos, data.distancia);
   } catch (e) {
-    alert("No se pudo conectar con el servidor. ¿Está el backend corriendo?");
+    mostrarError("No se pudo conectar con el servidor.\n¿Está el backend corriendo?");
     console.error(e);
   } finally {
     btn.disabled    = false;
