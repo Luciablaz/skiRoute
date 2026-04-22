@@ -601,6 +601,9 @@ html, body {
 
 .aviso-btn:hover { background: #d97706; }
 
+.aviso-btn-error             { background: #dc2626; }
+.aviso-btn-error:hover       { background: #b91c1c; }
+
 /* ===========================
    LEAFLET OVERRIDES
    =========================== */
