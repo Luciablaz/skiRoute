@@ -53,10 +53,26 @@ def heuristica(n1, n2, G):
     x2, y2 = G.nodes[n2]["pos"]
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
+# ── Dificultad ───────────────────────────────────────────────────────────────
+ORDEN_DIFICULTAD = {"Verde": 0, "Azul": 1, "Roja": 2, "Negra": 3}
+TIPOS_REMONTE    = {"telesilla", "telesqui", "telecabina"}
+
+def subgrafo_filtrado(G, dificultad_maxima: str | None):
+    if not dificultad_maxima or dificultad_maxima not in ORDEN_DIFICULTAD:
+        return G
+    nivel_max = ORDEN_DIFICULTAD[dificultad_maxima]
+    aristas_ok = [
+        (u, v) for u, v, d in G.edges(data=True)
+        if d.get("tipo_tramo") in TIPOS_REMONTE
+        or ORDEN_DIFICULTAD.get(d.get("dificultad", "Negra"), 3) <= nivel_max
+    ]
+    return G.edge_subgraph(aristas_ok)
+
 # ── Modelos ──────────────────────────────────────────────────────────────────
 class RutaRequest(BaseModel):
-    id_tramo_origen:  str
-    id_tramo_destino: str
+    id_tramo_origen:   str
+    id_tramo_destino:  str
+    dificultad_maxima: str | None = None
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
 @app.get("/health")
@@ -92,14 +108,15 @@ def calcular_ruta(req: RutaRequest):
     conn.close()
 
     # A*
+    g = subgrafo_filtrado(grafo, req.dificultad_maxima)
     try:
         ruta = nx.astar_path(
-            grafo, nodo_origen, nodo_destino,
+            g, nodo_origen, nodo_destino,
             heuristic=lambda a, b: heuristica(a, b, grafo),
             weight="weight"
         )
         distancia = nx.astar_path_length(
-            grafo, nodo_origen, nodo_destino,
+            g, nodo_origen, nodo_destino,
             heuristic=lambda a, b: heuristica(a, b, grafo),
             weight="weight"
         )
