@@ -352,6 +352,34 @@ function mostrarItinerario(tramos, distancia) {
 }
 
 // ── Cargar GeoJSON ───────────────────────────────────────────────────────────
+// ── Aviso cierre de remontes ─────────────────────────────────────────────────
+(function comprobarCierreRemontes() {
+  const AVISOS = [
+    { hora: 15, min: 30, texto: "Los remontes cierran aproximadamente en 1 hora.\nNo olvides planificar tu retorno a la base antes de las 16:30." },
+    { hora: 16, min:  0, texto: "Los remontes cierran en aproximadamente 30 minutos.\n¡Es hora de iniciar el regreso!" },
+  ];
+
+  const ahora  = new Date();
+  const hh     = ahora.getHours();
+  const mm     = ahora.getMinutes();
+  const minutos = hh * 60 + mm;
+
+  const aviso = AVISOS.find(a => {
+    const inicio = a.hora * 60 + a.min;
+    const fin    = inicio + 29;
+    return minutos >= inicio && minutos <= fin;
+  });
+
+  if (!aviso) return;
+
+  const overlay = document.getElementById("avisoOverlay");
+  document.getElementById("avisoTexto").innerText = aviso.texto;
+  overlay.style.display = "flex";
+  document.getElementById("avisoBtn").addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+})();
+
 fetch("data/" + estacion + "/tramos.geojson")
   .then(res => res.json())
   .then(data => {
