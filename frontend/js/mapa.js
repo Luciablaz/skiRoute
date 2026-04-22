@@ -27,6 +27,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 }).addTo(map);
 
 // ── Estado de selección ──────────────────────────────────────────────────────
+let dificultadMaxima = null; // null = sin restricción
 let modoActivo = null; // 'origen' | 'destino' | null
 let seleccion       = { origen: null, destino: null };
 let capasResaltadas = { origen: null, destino: null };
@@ -240,6 +241,15 @@ map.on("click", () => {
   if (modoActivo) { desactivarModo(); cerrarDropdowns(); }
 });
 
+// ── Selector de dificultad máxima ────────────────────────────────────────────
+document.querySelectorAll(".btn-dif").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".btn-dif").forEach(b => b.classList.remove("activo"));
+    btn.classList.add("activo");
+    dificultadMaxima = btn.dataset.dif || null;
+  });
+});
+
 // ── Calcular y pintar ruta ───────────────────────────────────────────────────
 const API_URL = "http://localhost:8001";
 let capasRuta = []; // layers resaltadas de la ruta
@@ -263,7 +273,7 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
     const res = await fetch(`${API_URL}/ruta`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id_tramo_origen: idOrigen, id_tramo_destino: idDestino }),
+      body:    JSON.stringify({ id_tramo_origen: idOrigen, id_tramo_destino: idDestino, dificultad_maxima: dificultadMaxima }),
     });
 
     if (!res.ok) {

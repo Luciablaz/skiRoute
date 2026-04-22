@@ -369,6 +369,50 @@ html, body {
 .badge-negra   { background: rgba(17,  17, 17,  0.1);  color: #374151; }
 .badge-remonte { background: rgba(156,163,175,  0.2);  color: #6b7280; }
 
+/* ── Selector de dificultad máxima ── */
+.dificultad-selector {
+  margin-bottom: 14px;
+}
+
+.dificultad-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.dificultad-botones {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-dif {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8faff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-dif.activo {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.btn-dif-verde.activo { border-color: #16a34a; background: rgba(22,163,74,0.1);  color: #16a34a; }
+.btn-dif-azul.activo  { border-color: #2563eb; background: rgba(37,99,235,0.1);  color: #2563eb; }
+.btn-dif-roja.activo  { border-color: #dc2626; background: rgba(220,38,38,0.1);  color: #dc2626; }
+.btn-dif-negra.activo { border-color: #374151; background: rgba(17,17,17,0.08);  color: #374151; }
+
 /* ── Botón calcular ruta ── */
 .btn-calcular {
   display: none;
