@@ -77,8 +77,11 @@ function estiloResaltado(feature) {
 
 // ── Marcadores A / B ─────────────────────────────────────────────────────────
 function puntoMedio(feature) {
-  const coords = feature.geometry.coordinates;
-  const mid    = coords[Math.floor(coords.length / 2)];
+  const geom  = feature.geometry;
+  const coords = geom.type === "MultiLineString"
+    ? geom.coordinates[0]   // primera línea del MultiLineString
+    : geom.coordinates;     // LineString normal
+  const mid = coords[Math.floor(coords.length / 2)];
   return [mid[1], mid[0]];
 }
 
