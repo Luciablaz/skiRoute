@@ -61,12 +61,20 @@ def subgrafo_filtrado(G, dificultad_maxima: str | None):
     if not dificultad_maxima or dificultad_maxima not in ORDEN_DIFICULTAD:
         return G
     nivel_max = ORDEN_DIFICULTAD[dificultad_maxima]
-    aristas_ok = [
-        (u, v) for u, v, d in G.edges(data=True)
-        if d.get("tipo_tramo") in TIPOS_REMONTE
-        or ORDEN_DIFICULTAD.get(d.get("dificultad", "Negra"), 3) <= nivel_max
-    ]
-    return G.edge_subgraph(aristas_ok)
+    H = nx.DiGraph()
+    # Añadir todos los nodos para que origen/destino siempre sean localizables
+    for nodo, data in G.nodes(data=True):
+        H.add_node(nodo, **data)
+    # Añadir solo las aristas permitidas
+    for u, v, data in G.edges(data=True):
+        tipo = (data.get("tipo_tramo") or "").lower()
+        dif  = (data.get("dificultad") or "")
+        es_remonte   = tipo in TIPOS_REMONTE
+        nivel_tramo  = ORDEN_DIFICULTAD.get(dif, None)
+        # Si dificultad es desconocida o nula → incluir siempre (no penalizar)
+        if es_remonte or nivel_tramo is None or nivel_tramo <= nivel_max:
+            H.add_edge(u, v, **data)
+    return H
 
 # ── Modelos ──────────────────────────────────────────────────────────────────
 class RutaRequest(BaseModel):
