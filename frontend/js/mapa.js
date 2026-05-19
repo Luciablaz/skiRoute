@@ -17,7 +17,8 @@ const nombres = {
 document.getElementById("titulo-estacion").innerText = nombres[estacion] || estacion;
 
 const centro = centros[estacion] || [40.790, -3.970];
-const map = L.map("map", { zoomControl: true }).setView(centro, 14);
+const map = L.map("map", { zoomControl: false }).setView(centro, 14);
+L.control.zoom({ position: "topright" }).addTo(map);
 
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution:
