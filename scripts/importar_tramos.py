@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 # ── Parámetro: estación a importar ───────────────────────────────────────────
-ESTACION = "Valdesqui"  # Cambia a "Valdesqui" o "Navacerrada" según corresponda
+ESTACION = "Cerler"  # Cambia a "Valdesqui" o "Navacerrada" según corresponda
 
 nodos_path  = f"../data/Nodos_{ESTACION}.geojson"
 tramos_path = f"../data/Tramos_{ESTACION}.geojson"
