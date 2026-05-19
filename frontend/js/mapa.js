@@ -331,11 +331,31 @@ function pintarRuta(tramos, distancia) {
 
   const idsRuta = new Set(tramos.map(t => t.id_tramo));
 
-  // Resaltar los tramos del GeoJSON que forman la ruta
+  // Incluir también el nombre del origen y destino seleccionados
+  const nombresExtras = new Set();
+  if (seleccion.origen?.properties?.nombre)  nombresExtras.add(seleccion.origen.properties.nombre);
+  if (seleccion.destino?.properties?.nombre) nombresExtras.add(seleccion.destino.properties.nombre);
+
+  // Paso 1: recoger los nombres de las capas que coinciden por ID
+  const nombresRuta = new Set([...nombresExtras]);
   capaGeoJSON.eachLayer(layer => {
-    const id = layer.feature?.properties?.id_tramo;
-    if (idsRuta.has(id)) {
-      layer.setStyle({ color: "#f59e0b", weight: 8, opacity: 1 });
+    const props = layer.feature?.properties;
+    if (props && idsRuta.has(props.id_tramo) && props.nombre) {
+      nombresRuta.add(props.nombre);
+    }
+  });
+
+  // Paso 2: pintar capas de la ruta (naranja) y origen/destino (su color resaltado)
+  capaGeoJSON.eachLayer(layer => {
+    const props = layer.feature?.properties;
+    if (!props) return;
+    if (idsRuta.has(props.id_tramo) || nombresRuta.has(props.nombre)) {
+      const esOrigenDestino = nombresExtras.has(props.nombre) && !idsRuta.has(props.id_tramo);
+      if (esOrigenDestino) {
+        layer.setStyle(estiloResaltado(layer.feature));
+      } else {
+        layer.setStyle({ color: "#f59e0b", weight: 8, opacity: 1 });
+      }
       layer.bringToFront();
       capasRuta.push(layer);
     }
