@@ -122,8 +122,8 @@ def calcular_ruta(req: RutaRequest):
         )
     except nx.NetworkXNoPath:
         raise HTTPException(404, "No existe ruta entre los puntos seleccionados")
-    except nx.NodeNotFound as e:
-        raise HTTPException(404, str(e))
+    except nx.NodeNotFound:
+        raise HTTPException(404, "No existe ruta entre los puntos seleccionados")
 
     # Secuencia de tramos (sin repetir tramos consecutivos iguales)
     tramos_ruta = []
