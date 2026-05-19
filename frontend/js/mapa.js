@@ -152,8 +152,15 @@ function seleccionarTramo(feature, layer) {
 function filtrarTramos(texto) {
   const q = texto.toLowerCase().trim();
   if (!q) return [];
+  const vistos = new Set();
   return todosLosTramos
-    .filter(f => f.properties.nombre && f.properties.nombre.toLowerCase().includes(q))
+    .filter(f => {
+      const nombre = f.properties.nombre;
+      if (!nombre || !nombre.toLowerCase().includes(q)) return false;
+      if (vistos.has(nombre)) return false;
+      vistos.add(nombre);
+      return true;
+    })
     .slice(0, 8);
 }
 
@@ -345,10 +352,18 @@ function mostrarItinerario(tramos, distancia) {
 
   lista.innerHTML = "";
 
-  tramos.forEach((t, i) => {
-    // Buscar el nombre en el GeoJSON
+  // Agrupar tramos consecutivos con el mismo nombre
+  const tramosAgrupados = tramos.reduce((acc, t) => {
     const feature = todosLosTramos.find(f => f.properties.id_tramo === t.id_tramo);
     const nombre  = feature?.properties?.nombre || t.id_tramo;
+    const ultimo  = acc[acc.length - 1];
+    if (ultimo && ultimo.nombre === nombre) return acc; // mismo nombre consecutivo → ignorar
+    acc.push({ ...t, nombre });
+    return acc;
+  }, []);
+
+  tramosAgrupados.forEach((t, i) => {
+    const nombre  = t.nombre;
     const tipoLower = (t.tipo_tramo || "").toLowerCase();
     const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(tipoLower);
     const dif       = (t.dificultad || "").toLowerCase();
