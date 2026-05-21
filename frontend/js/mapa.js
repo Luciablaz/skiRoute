@@ -48,20 +48,22 @@ function estiloPista(feature) {
   }
 
   const colores = {
-    Verde: "#16a34a",
-    Azul:  "#2563eb",
-    Roja:  "#dc2626",
-    Negra: "#111111",
+    Verde:    "#16a34a",
+    Azul:     "#2563eb",
+    Roja:     "#dc2626",
+    Negra:    "#111111",
+    Freeride: "#92400e",
   };
 
   return { color: colores[dificultad] || "#8899bb", weight: 4, opacity: 0.9 };
 }
 
 const coloresBrillantes = {
-  Verde: "#4ade80",
-  Azul:  "#60a5fa",
-  Roja:  "#f87171",
-  Negra: "#6b7280",
+  Verde:    "#4ade80",
+  Azul:     "#60a5fa",
+  Roja:     "#f87171",
+  Negra:    "#6b7280",
+  Freeride: "#b45309",
 };
 
 function estiloResaltado(feature) {

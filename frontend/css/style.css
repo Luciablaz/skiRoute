@@ -153,10 +153,11 @@ html, body {
   display: inline-block;
 }
 
-.badge-verde  { background: #16a34a; }
-.badge-azul   { background: #2563eb; }
-.badge-roja   { background: #dc2626; }
-.badge-negra  { background: #111111; }
+.badge-verde    { background: #16a34a; }
+.badge-azul     { background: #2563eb; }
+.badge-roja     { background: #dc2626; }
+.badge-negra    { background: #111111; }
+.badge-freeride { background: #92400e; }
 
 .card-arrow {
   font-size: 20px;
@@ -367,7 +368,8 @@ html, body {
 .badge-azul    { background: rgba(37, 99,  235, 0.15); color: #2563eb; }
 .badge-roja    { background: rgba(220, 38, 38,  0.15); color: #dc2626; }
 .badge-negra   { background: rgba(17,  17, 17,  0.1);  color: #374151; }
-.badge-remonte { background: rgba(156,163,175,  0.2);  color: #6b7280; }
+.badge-freeride { background: rgba(146, 64, 14, 0.15); color: #92400e; }
+.badge-remonte  { background: rgba(156,163,175,  0.2); color: #6b7280; }
 
 /* ── Selector de dificultad máxima ── */
 .dificultad-selector {
