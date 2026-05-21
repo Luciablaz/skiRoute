@@ -3,22 +3,23 @@ const params = new URLSearchParams(window.location.search);
 const estacion = params.get("estacion") || "valdesqui";
 
 const centros = {
-  candanchu:   [42.7523, -0.5142],
-  valdesqui:   [40.790, -3.970],
-  cerler:      [42.55688,  0.55291],
-  panticosa:   [42.70083, -0.27218],
+  candanchu: [42.78284, -0.53733],
+  valdesqui: [40.79, -3.97],
+  cerler: [42.55688, 0.55291],
+  panticosa: [42.70083, -0.27218],
 };
 
 const nombres = {
-  candanchu:   "Candanchú",
-  valdesqui:   "Valdesquí",
-  cerler:      "Cerler",
-  panticosa:   "Panticosa",
+  candanchu: "Candanchú",
+  valdesqui: "Valdesquí",
+  cerler: "Cerler",
+  panticosa: "Panticosa",
 };
 
-document.getElementById("titulo-estacion").innerText = nombres[estacion] || estacion;
+document.getElementById("titulo-estacion").innerText =
+  nombres[estacion] || estacion;
 
-const centro = centros[estacion] || [40.790, -3.970];
+const centro = centros[estacion] || [40.79, -3.97];
 const map = L.map("map", { zoomControl: false }).setView(centro, 14);
 L.control.zoom({ position: "topright" }).addTo(map);
 
@@ -32,26 +33,26 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 // ── Estado de selección ──────────────────────────────────────────────────────
 let dificultadMaxima = null; // null = sin restricción
 let modoActivo = null; // 'origen' | 'destino' | null
-let seleccion       = { origen: null, destino: null };
+let seleccion = { origen: null, destino: null };
 let capasResaltadas = { origen: null, destino: null };
-let marcadores      = { origen: null, destino: null };
-let todosLosTramos  = [];
-let capaGeoJSON     = null;
+let marcadores = { origen: null, destino: null };
+let todosLosTramos = [];
+let capaGeoJSON = null;
 
 // ── Estilos ──────────────────────────────────────────────────────────────────
 function estiloPista(feature) {
   const dificultad = feature.properties.dificultad;
-  const tipo       = feature.properties.tipo_tramo;
+  const tipo = feature.properties.tipo_tramo;
 
   if (tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina") {
     return { color: "#9ca3af", weight: 3, opacity: 0.8 };
   }
 
   const colores = {
-    Verde:    "#16a34a",
-    Azul:     "#2563eb",
-    Roja:     "#dc2626",
-    Negra:    "#111111",
+    Verde: "#16a34a",
+    Azul: "#2563eb",
+    Roja: "#dc2626",
+    Negra: "#111111",
     Freeride: "#92400e",
   };
 
@@ -59,22 +60,25 @@ function estiloPista(feature) {
 }
 
 const coloresBrillantes = {
-  Verde:    "#4ade80",
-  Azul:     "#60a5fa",
-  Roja:     "#f87171",
-  Negra:    "#6b7280",
+  Verde: "#4ade80",
+  Azul: "#60a5fa",
+  Roja: "#f87171",
+  Negra: "#6b7280",
   Freeride: "#b45309",
 };
 
 function estiloResaltado(feature) {
-  const base       = estiloPista(feature);
+  const base = estiloPista(feature);
   const dificultad = feature.properties.dificultad;
-  const tipo       = feature.properties.tipo_tramo;
-  const esRemonteFn = tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina";
+  const tipo = feature.properties.tipo_tramo;
+  const esRemonteFn =
+    tipo === "telesilla" || tipo === "telesqui" || tipo === "telecabina";
 
   return {
     ...base,
-    color:  esRemonteFn ? "#d1d5db" : (coloresBrillantes[dificultad] || base.color),
+    color: esRemonteFn
+      ? "#d1d5db"
+      : coloresBrillantes[dificultad] || base.color,
     weight: base.weight + 5,
     opacity: 1,
   };
@@ -82,20 +86,21 @@ function estiloResaltado(feature) {
 
 // ── Marcadores A / B ─────────────────────────────────────────────────────────
 function puntoMedio(feature) {
-  const geom  = feature.geometry;
-  const coords = geom.type === "MultiLineString"
-    ? geom.coordinates[0]   // primera línea del MultiLineString
-    : geom.coordinates;     // LineString normal
+  const geom = feature.geometry;
+  const coords =
+    geom.type === "MultiLineString"
+      ? geom.coordinates[0] // primera línea del MultiLineString
+      : geom.coordinates; // LineString normal
   const mid = coords[Math.floor(coords.length / 2)];
   return [mid[1], mid[0]];
 }
 
 function crearMarcador(feature, modo) {
   const letra = modo === "origen" ? "A" : "B";
-  const icon  = L.divIcon({
+  const icon = L.divIcon({
     className: "",
     html: `<div class="marcador-seleccion marcador-${modo}">${letra}</div>`,
-    iconSize:   [26, 26],
+    iconSize: [26, 26],
     iconAnchor: [13, 13],
   });
   return L.marker(puntoMedio(feature), { icon, interactive: false }).addTo(map);
@@ -111,8 +116,12 @@ function quitarMarcador(modo) {
 // ── Modo selección ───────────────────────────────────────────────────────────
 function activarModo(modo) {
   modoActivo = modo;
-  document.getElementById("rowOrigen").classList.toggle("activo", modo === "origen");
-  document.getElementById("rowDestino").classList.toggle("activo", modo === "destino");
+  document
+    .getElementById("rowOrigen")
+    .classList.toggle("activo", modo === "origen");
+  document
+    .getElementById("rowDestino")
+    .classList.toggle("activo", modo === "destino");
   map.getContainer().style.cursor = "crosshair";
 }
 
@@ -126,7 +135,7 @@ function desactivarModo() {
 // ── Seleccionar tramo ────────────────────────────────────────────────────────
 function actualizarBotonCalcular() {
   const btn = document.getElementById("btnCalcular");
-  btn.style.display = (seleccion.origen && seleccion.destino) ? "block" : "none";
+  btn.style.display = seleccion.origen && seleccion.destino ? "block" : "none";
 }
 
 function seleccionarTramo(feature, layer) {
@@ -142,8 +151,8 @@ function seleccionarTramo(feature, layer) {
   layer.setStyle(estiloResaltado(feature));
   layer.bringToFront();
   capasResaltadas[modo] = layer;
-  marcadores[modo]      = crearMarcador(feature, modo);
-  seleccion[modo]       = feature;
+  marcadores[modo] = crearMarcador(feature, modo);
+  seleccion[modo] = feature;
 
   const inputId = modo === "origen" ? "inputOrigen" : "inputDestino";
   document.getElementById(inputId).value = feature.properties.nombre;
@@ -159,7 +168,7 @@ function filtrarTramos(texto) {
   if (!q) return [];
   const vistos = new Set();
   return todosLosTramos
-    .filter(f => {
+    .filter((f) => {
       const nombre = f.properties.nombre;
       if (!nombre || !nombre.toLowerCase().includes(q)) return false;
       if (vistos.has(nombre)) return false;
@@ -183,9 +192,12 @@ function mostrarDropdown(dropId, resultados, modo) {
     return;
   }
 
-  resultados.forEach(feature => {
+  resultados.forEach((feature) => {
     const remonte = esRemonte(feature);
     const dif     = (feature.properties.dificultad || "").toLowerCase();
+    const etiquetaDif = feature.properties.dificultad === "Freeride"
+      ? "Fuera de pista"
+      : feature.properties.dificultad || "";
 
     const item = document.createElement("div");
     item.className = "drop-item";
@@ -193,13 +205,13 @@ function mostrarDropdown(dropId, resultados, modo) {
       <span class="drop-icono">${remonte ? "⬆" : "⬇"}</span>
       <span class="drop-nombre">${feature.properties.nombre}</span>
       <span class="drop-badge ${remonte ? "badge-remonte" : "badge-" + dif}">
-        ${remonte ? "Remonte" : feature.properties.dificultad || ""}
+        ${remonte ? "Remonte" : etiquetaDif}
       </span>`;
 
-    item.addEventListener("mousedown", e => {
+    item.addEventListener("mousedown", (e) => {
       e.preventDefault();
       activarModo(modo);
-      capaGeoJSON.eachLayer(layer => {
+      capaGeoJSON.eachLayer((layer) => {
         if (layer.feature === feature) seleccionarTramo(feature, layer);
       });
     });
@@ -211,24 +223,31 @@ function mostrarDropdown(dropId, resultados, modo) {
 }
 
 function cerrarDropdowns() {
-  document.getElementById("dropOrigen").style.display  = "none";
+  document.getElementById("dropOrigen").style.display = "none";
   document.getElementById("dropDestino").style.display = "none";
 }
 
 // ── Eventos de inputs ────────────────────────────────────────────────────────
-document.getElementById("inputOrigen").addEventListener("focus", () => activarModo("origen"));
-document.getElementById("inputDestino").addEventListener("focus", () => activarModo("destino"));
+document
+  .getElementById("inputOrigen")
+  .addEventListener("focus", () => activarModo("origen"));
+document
+  .getElementById("inputDestino")
+  .addEventListener("focus", () => activarModo("destino"));
 
-document.getElementById("inputOrigen").addEventListener("input", e => {
+document.getElementById("inputOrigen").addEventListener("input", (e) => {
   mostrarDropdown("dropOrigen", filtrarTramos(e.target.value), "origen");
 });
-document.getElementById("inputDestino").addEventListener("input", e => {
+document.getElementById("inputDestino").addEventListener("input", (e) => {
   mostrarDropdown("dropDestino", filtrarTramos(e.target.value), "destino");
 });
 
 document.getElementById("clearOrigen").addEventListener("click", () => {
   document.getElementById("inputOrigen").value = "";
-  if (capasResaltadas.origen) { capaGeoJSON.resetStyle(capasResaltadas.origen); capasResaltadas.origen = null; }
+  if (capasResaltadas.origen) {
+    capaGeoJSON.resetStyle(capasResaltadas.origen);
+    capasResaltadas.origen = null;
+  }
   quitarMarcador("origen");
   seleccion.origen = null;
   cerrarDropdowns();
@@ -236,7 +255,10 @@ document.getElementById("clearOrigen").addEventListener("click", () => {
 });
 document.getElementById("clearDestino").addEventListener("click", () => {
   document.getElementById("inputDestino").value = "";
-  if (capasResaltadas.destino) { capaGeoJSON.resetStyle(capasResaltadas.destino); capasResaltadas.destino = null; }
+  if (capasResaltadas.destino) {
+    capaGeoJSON.resetStyle(capasResaltadas.destino);
+    capasResaltadas.destino = null;
+  }
   quitarMarcador("destino");
   seleccion.destino = null;
   cerrarDropdowns();
@@ -244,7 +266,7 @@ document.getElementById("clearDestino").addEventListener("click", () => {
 });
 
 // cerrar al clicar fuera del panel
-document.addEventListener("click", e => {
+document.addEventListener("click", (e) => {
   if (!e.target.closest(".punto-row")) {
     cerrarDropdowns();
     desactivarModo();
@@ -253,13 +275,18 @@ document.addEventListener("click", e => {
 
 // click en mapa vacío → desactivar modo
 map.on("click", () => {
-  if (modoActivo) { desactivarModo(); cerrarDropdowns(); }
+  if (modoActivo) {
+    desactivarModo();
+    cerrarDropdowns();
+  }
 });
 
 // ── Selector de dificultad máxima ────────────────────────────────────────────
-document.querySelectorAll(".btn-dif").forEach(btn => {
+document.querySelectorAll(".btn-dif").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".btn-dif").forEach(b => b.classList.remove("activo"));
+    document
+      .querySelectorAll(".btn-dif")
+      .forEach((b) => b.classList.remove("activo"));
     btn.classList.add("activo");
     dificultadMaxima = btn.dataset.dif || null;
   });
@@ -281,24 +308,30 @@ let capasRuta = [];
 
 document.getElementById("btnCalcular").addEventListener("click", async () => {
   const btn = document.getElementById("btnCalcular");
-  btn.disabled    = true;
+  btn.disabled = true;
   btn.textContent = "Calculando…";
 
-  const idOrigen  = seleccion.origen?.properties?.id_tramo;
+  const idOrigen = seleccion.origen?.properties?.id_tramo;
   const idDestino = seleccion.destino?.properties?.id_tramo;
 
   if (!idOrigen || !idDestino) {
-    mostrarError("Selecciona un origen y un destino antes de calcular la ruta.");
-    btn.disabled    = false;
+    mostrarError(
+      "Selecciona un origen y un destino antes de calcular la ruta.",
+    );
+    btn.disabled = false;
     btn.textContent = "Calcular ruta";
     return;
   }
 
   try {
     const res = await fetch(`${API_URL}/ruta`, {
-      method:  "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id_tramo_origen: idOrigen, id_tramo_destino: idDestino, dificultad_maxima: dificultadMaxima }),
+      body: JSON.stringify({
+        id_tramo_origen: idOrigen,
+        id_tramo_destino: idDestino,
+        dificultad_maxima: dificultadMaxima,
+      }),
     });
 
     if (!res.ok) {
@@ -308,7 +341,7 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
       mostrarError(
         esNoRuta
           ? "No existe una ruta posible entre los puntos seleccionados con la dificultad máxima elegida.\n\nPrueba a cambiar el origen, el destino o ampliar la dificultad máxima."
-          : detalle
+          : detalle,
       );
       return;
     }
@@ -316,16 +349,18 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
     const data = await res.json();
     pintarRuta(data.tramos, data.distancia);
   } catch (e) {
-    mostrarError("No se pudo conectar con el servidor.\n¿Está el backend corriendo?");
+    mostrarError(
+      "No se pudo conectar con el servidor.\n¿Está el backend corriendo?",
+    );
     console.error(e);
   } finally {
-    btn.disabled    = false;
+    btn.disabled = false;
     btn.textContent = "Calcular ruta";
   }
 });
 
 function limpiarRuta() {
-  capasRuta.forEach(layer => capaGeoJSON.resetStyle(layer));
+  capasRuta.forEach((layer) => capaGeoJSON.resetStyle(layer));
   capasRuta = [];
   const itinerario = document.getElementById("itinerario");
   if (itinerario) itinerario.style.display = "none";
@@ -334,16 +369,18 @@ function limpiarRuta() {
 function pintarRuta(tramos, distancia) {
   limpiarRuta();
 
-  const idsRuta = new Set(tramos.map(t => t.id_tramo));
+  const idsRuta = new Set(tramos.map((t) => t.id_tramo));
 
   // Incluir también el nombre del origen y destino seleccionados
   const nombresExtras = new Set();
-  if (seleccion.origen?.properties?.nombre)  nombresExtras.add(seleccion.origen.properties.nombre);
-  if (seleccion.destino?.properties?.nombre) nombresExtras.add(seleccion.destino.properties.nombre);
+  if (seleccion.origen?.properties?.nombre)
+    nombresExtras.add(seleccion.origen.properties.nombre);
+  if (seleccion.destino?.properties?.nombre)
+    nombresExtras.add(seleccion.destino.properties.nombre);
 
   // Paso 1: recoger los nombres de las capas que coinciden por ID
   const nombresRuta = new Set([...nombresExtras]);
-  capaGeoJSON.eachLayer(layer => {
+  capaGeoJSON.eachLayer((layer) => {
     const props = layer.feature?.properties;
     if (props && idsRuta.has(props.id_tramo) && props.nombre) {
       nombresRuta.add(props.nombre);
@@ -351,11 +388,12 @@ function pintarRuta(tramos, distancia) {
   });
 
   // Paso 2: pintar capas de la ruta (naranja) y origen/destino (su color resaltado)
-  capaGeoJSON.eachLayer(layer => {
+  capaGeoJSON.eachLayer((layer) => {
     const props = layer.feature?.properties;
     if (!props) return;
     if (idsRuta.has(props.id_tramo) || nombresRuta.has(props.nombre)) {
-      const esOrigenDestino = nombresExtras.has(props.nombre) && !idsRuta.has(props.id_tramo);
+      const esOrigenDestino =
+        nombresExtras.has(props.nombre) && !idsRuta.has(props.id_tramo);
       if (esOrigenDestino) {
         layer.setStyle(estiloResaltado(layer.feature));
       } else {
@@ -372,26 +410,30 @@ function pintarRuta(tramos, distancia) {
 
 function mostrarItinerario(tramos, distancia) {
   const contenedor = document.getElementById("itinerario");
-  const lista      = document.getElementById("itinerarioLista");
-  const dist       = document.getElementById("itinerarioDistancia");
+  const lista = document.getElementById("itinerarioLista");
+  const dist = document.getElementById("itinerarioDistancia");
 
   lista.innerHTML = "";
 
   // Agrupar tramos consecutivos con el mismo nombre
   const tramosAgrupados = tramos.reduce((acc, t) => {
-    const feature = todosLosTramos.find(f => f.properties.id_tramo === t.id_tramo);
-    const nombre  = feature?.properties?.nombre || t.id_tramo;
-    const ultimo  = acc[acc.length - 1];
+    const feature = todosLosTramos.find(
+      (f) => f.properties.id_tramo === t.id_tramo,
+    );
+    const nombre = feature?.properties?.nombre || t.id_tramo;
+    const ultimo = acc[acc.length - 1];
     if (ultimo && ultimo.nombre === nombre) return acc; // mismo nombre consecutivo → ignorar
     acc.push({ ...t, nombre });
     return acc;
   }, []);
 
   tramosAgrupados.forEach((t, i) => {
-    const nombre  = t.nombre;
+    const nombre = t.nombre;
     const tipoLower = (t.tipo_tramo || "").toLowerCase();
-    const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(tipoLower);
-    const dif       = (t.dificultad || "").toLowerCase();
+    const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(
+      tipoLower,
+    );
+    const dif = (t.dificultad || "").toLowerCase();
 
     const paso = document.createElement("div");
     paso.className = "itinerario-paso";
@@ -399,9 +441,13 @@ function mostrarItinerario(tramos, distancia) {
       <span class="paso-num">${i + 1}</span>
       <span class="paso-icono ${esRemonte ? "icono-sube" : "icono-baja"}">${esRemonte ? "▲" : "▼"}</span>
       <span class="paso-nombre">${nombre}</span>
-      ${esRemonte
-        ? `<span class="drop-badge badge-remonte">${t.tipo_tramo}</span>`
-        : t.dificultad ? `<span class="drop-badge badge-${dif}">${t.dificultad}</span>` : ""}
+      ${
+        esRemonte
+          ? `<span class="drop-badge badge-remonte">${t.tipo_tramo}</span>`
+          : t.dificultad
+            ? `<span class="drop-badge badge-${dif}">${t.dificultad === "Freeride" ? "Fuera de pista" : t.dificultad}</span>`
+            : ""
+      }
     `;
     lista.appendChild(paso);
   });
@@ -414,18 +460,28 @@ function mostrarItinerario(tramos, distancia) {
 // ── Aviso cierre de remontes ─────────────────────────────────────────────────
 (function comprobarCierreRemontes() {
   const AVISOS = [
-    { hora: 15, min: 30, texto: "Los remontes cierran aproximadamente en 1 hora.\nNo olvides planificar tu retorno a la base antes de las 16:30." },
-    { hora: 16, min:  0, texto: "Los remontes cierran en aproximadamente 30 minutos.\n¡Es hora de iniciar el regreso!" },
+    {
+      hora: 15,
+      min: 30,
+      texto:
+        "Los remontes cierran aproximadamente en 1 hora.\nNo olvides planificar tu retorno a la base antes de las 16:30.",
+    },
+    {
+      hora: 16,
+      min: 0,
+      texto:
+        "Los remontes cierran en aproximadamente 30 minutos.\n¡Es hora de iniciar el regreso!",
+    },
   ];
 
-  const ahora  = new Date();
-  const hh     = ahora.getHours();
-  const mm     = ahora.getMinutes();
+  const ahora = new Date();
+  const hh = ahora.getHours();
+  const mm = ahora.getMinutes();
   const minutos = hh * 60 + mm;
 
-  const aviso = AVISOS.find(a => {
+  const aviso = AVISOS.find((a) => {
     const inicio = a.hora * 60 + a.min;
-    const fin    = inicio + 29;
+    const fin = inicio + 29;
     return minutos >= inicio && minutos <= fin;
   });
 
@@ -440,14 +496,14 @@ function mostrarItinerario(tramos, distancia) {
 })();
 
 fetch("data/" + estacion + "/tramos.geojson")
-  .then(res => res.json())
-  .then(data => {
+  .then((res) => res.json())
+  .then((data) => {
     todosLosTramos = data.features;
 
     capaGeoJSON = L.geoJSON(data, {
       style: estiloPista,
       onEachFeature: (feature, layer) => {
-        layer.on("click", e => {
+        layer.on("click", (e) => {
           L.DomEvent.stopPropagation(e);
           if (modoActivo) seleccionarTramo(feature, layer);
         });
