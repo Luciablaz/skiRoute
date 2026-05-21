@@ -1,7 +1,7 @@
 import geopandas as gpd
 from sqlalchemy import create_engine
 
-gdf = gpd.read_file("../data/Nodos_Panticosa.geojson")
+gdf = gpd.read_file("../data/Nodos_Candanchu.geojson")
 gdf = gdf[["id_nodo", "geometry"]]
 
 engine = create_engine("postgresql://postgres:1234asdf@localhost:5432/skiRoute")
