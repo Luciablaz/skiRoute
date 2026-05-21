@@ -5,8 +5,8 @@ const estacion = params.get("estacion") || "valdesqui";
 const centros = {
   valdesqui:   [40.790, -3.970],
   navacerrada: [40.783, -4.013],
-  cerler:      [42.570,  0.560],
-  panticosa:   [42.733, -0.257],
+  cerler:      [42.55688,  0.55291],
+  panticosa:   [42.70083, -0.27218],
 };
 
 const nombres = {
