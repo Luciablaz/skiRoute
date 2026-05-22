@@ -49,22 +49,22 @@ function estiloPista(feature) {
   }
 
   const colores = {
-    Verde: "#16a34a",
-    Azul: "#2563eb",
-    Roja: "#dc2626",
-    Negra: "#111111",
-    Freeride: "#92400e",
+    Verde:            "#16a34a",
+    Azul:             "#2563eb",
+    Roja:             "#dc2626",
+    Negra:            "#111111",
+    "Fuera de pista": "#92400e",
   };
 
   return { color: colores[dificultad] || "#8899bb", weight: 4, opacity: 0.9 };
 }
 
 const coloresBrillantes = {
-  Verde: "#4ade80",
-  Azul: "#60a5fa",
-  Roja: "#f87171",
-  Negra: "#6b7280",
-  Freeride: "#b45309",
+  Verde:            "#4ade80",
+  Azul:             "#60a5fa",
+  Roja:             "#f87171",
+  Negra:            "#6b7280",
+  "Fuera de pista": "#b45309",
 };
 
 function estiloResaltado(feature) {
@@ -194,10 +194,9 @@ function mostrarDropdown(dropId, resultados, modo) {
 
   resultados.forEach((feature) => {
     const remonte = esRemonte(feature);
-    const dif     = (feature.properties.dificultad || "").toLowerCase();
-    const etiquetaDif = feature.properties.dificultad === "Freeride"
-      ? "Fuera de pista"
-      : feature.properties.dificultad || "";
+    const difRaw      = feature.properties.dificultad || "";
+    const dif         = difRaw === "Fuera de pista" ? "freeride" : difRaw.toLowerCase();
+    const etiquetaDif = difRaw;
 
     const item = document.createElement("div");
     item.className = "drop-item";
@@ -445,7 +444,7 @@ function mostrarItinerario(tramos, distancia) {
         esRemonte
           ? `<span class="drop-badge badge-remonte">${t.tipo_tramo}</span>`
           : t.dificultad
-            ? `<span class="drop-badge badge-${dif}">${t.dificultad === "Freeride" ? "Fuera de pista" : t.dificultad}</span>`
+            ? `<span class="drop-badge badge-${t.dificultad === "Fuera de pista" ? "freeride" : dif}">${t.dificultad}</span>`
             : ""
       }
     `;
