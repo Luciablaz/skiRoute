@@ -1,32 +1,37 @@
-// obtener estación desde la URL
+// Lee el parámetro de estación desde la URL para saber qué datos cargar
 const params = new URLSearchParams(window.location.search);
 const estacion = params.get("estacion") || "valdesqui";
 
+// Coordenadas del centro del mapa para cada estación
 const centros = {
-  formigal:  [42.77341, -0.40996],
-  astun:     [42.80391, -0.49816],
+  formigal: [42.77341, -0.40996],
+  astun: [42.80391, -0.49816],
   candanchu: [42.78284, -0.53733],
-  valdesqui: [40.79, -3.97],
+  valdesqui: [40.79735, -3.97303],
   cerler: [42.55688, 0.55291],
   panticosa: [42.70083, -0.27218],
 };
 
+// Nombres legibles de cada estación para mostrar en la barra superior
 const nombres = {
-  formigal:  "Formigal",
-  astun:     "Astún",
+  formigal: "Formigal",
+  astun: "Astún",
   candanchu: "Candanchú",
   valdesqui: "Valdesquí",
   cerler: "Cerler",
   panticosa: "Panticosa",
 };
 
+// Muestra el nombre de la estación en la barra superior
 document.getElementById("titulo-estacion").innerText =
   nombres[estacion] || estacion;
 
-const centro = centros[estacion] || [40.79, -3.97];
+// Inicializa el mapa centrado en la estación seleccionada
+const centro = centros[estacion] || [40.79735, -3.97303];
 const map = L.map("map", { zoomControl: false }).setView(centro, 14);
 L.control.zoom({ position: "topright" }).addTo(map);
 
+// Capa base de mapa en estilo claro de CartoCDN
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -34,7 +39,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19,
 }).addTo(map);
 
-// ── Estado de selección ──────────────────────────────────────────────────────
+// Variables de estado de la selección de origen y destino
 let dificultadMaxima = null; // null = sin restricción
 let modoActivo = null; // 'origen' | 'destino' | null
 let seleccion = { origen: null, destino: null };
@@ -43,7 +48,7 @@ let marcadores = { origen: null, destino: null };
 let todosLosTramos = [];
 let capaGeoJSON = null;
 
-// ── Estilos ──────────────────────────────────────────────────────────────────
+// Devuelve el estilo por defecto de cada tramo según su tipo y dificultad
 function estiloPista(feature) {
   const dificultad = feature.properties.dificultad;
   const tipo = feature.properties.tipo_tramo;
@@ -53,24 +58,26 @@ function estiloPista(feature) {
   }
 
   const colores = {
-    Verde:            "#16a34a",
-    Azul:             "#2563eb",
-    Roja:             "#dc2626",
-    Negra:            "#111111",
+    Verde: "#16a34a",
+    Azul: "#2563eb",
+    Roja: "#dc2626",
+    Negra: "#111111",
     "Fuera de pista": "#92400e",
   };
 
   return { color: colores[dificultad] || "#8899bb", weight: 4, opacity: 0.9 };
 }
 
+// Versión más brillante de cada color para resaltar tramos seleccionados
 const coloresBrillantes = {
-  Verde:            "#4ade80",
-  Azul:             "#60a5fa",
-  Roja:             "#f87171",
-  Negra:            "#6b7280",
+  Verde: "#4ade80",
+  Azul: "#60a5fa",
+  Roja: "#f87171",
+  Negra: "#6b7280",
   "Fuera de pista": "#b45309",
 };
 
+// Devuelve el estilo resaltado de un tramo (más grueso y con color más claro)
 function estiloResaltado(feature) {
   const base = estiloPista(feature);
   const dificultad = feature.properties.dificultad;
@@ -88,7 +95,7 @@ function estiloResaltado(feature) {
   };
 }
 
-// ── Marcadores A / B ─────────────────────────────────────────────────────────
+// Calcula el punto central de un tramo para colocar el marcador A o B
 function puntoMedio(feature) {
   const geom = feature.geometry;
   const coords =
@@ -99,6 +106,7 @@ function puntoMedio(feature) {
   return [mid[1], mid[0]];
 }
 
+// Crea el marcador circular con la letra A (origen) o B (destino) sobre el mapa
 function crearMarcador(feature, modo) {
   const letra = modo === "origen" ? "A" : "B";
   const icon = L.divIcon({
@@ -110,6 +118,7 @@ function crearMarcador(feature, modo) {
   return L.marker(puntoMedio(feature), { icon, interactive: false }).addTo(map);
 }
 
+// Elimina el marcador de origen o destino del mapa
 function quitarMarcador(modo) {
   if (marcadores[modo]) {
     map.removeLayer(marcadores[modo]);
@@ -117,7 +126,7 @@ function quitarMarcador(modo) {
   }
 }
 
-// ── Modo selección ───────────────────────────────────────────────────────────
+// Activa el modo de selección (origen o destino) y cambia el cursor del mapa
 function activarModo(modo) {
   modoActivo = modo;
   document
@@ -129,6 +138,7 @@ function activarModo(modo) {
   map.getContainer().style.cursor = "crosshair";
 }
 
+// Desactiva el modo de selección y restaura el cursor normal
 function desactivarModo() {
   modoActivo = null;
   document.getElementById("rowOrigen").classList.remove("activo");
@@ -136,17 +146,18 @@ function desactivarModo() {
   map.getContainer().style.cursor = "";
 }
 
-// ── Seleccionar tramo ────────────────────────────────────────────────────────
+// Muestra u oculta el botón de calcular según si hay origen y destino seleccionados
 function actualizarBotonCalcular() {
   const btn = document.getElementById("btnCalcular");
   btn.style.display = seleccion.origen && seleccion.destino ? "block" : "none";
 }
 
+// Registra el tramo clicado como origen o destino y actualiza el mapa y el formulario
 function seleccionarTramo(feature, layer) {
   if (!modoActivo) return;
   const modo = modoActivo;
 
-  // quitar resaltado y marcador anterior del mismo slot
+  // Quita el resaltado y el marcador anterior del mismo slot
   if (capasResaltadas[modo]) {
     capaGeoJSON.resetStyle(capasResaltadas[modo]);
   }
@@ -166,7 +177,7 @@ function seleccionarTramo(feature, layer) {
   actualizarBotonCalcular();
 }
 
-// ── Autocomplete ─────────────────────────────────────────────────────────────
+// Filtra los tramos que coinciden con el texto escrito, sin repetir nombres
 function filtrarTramos(texto) {
   const q = texto.toLowerCase().trim();
   if (!q) return [];
@@ -182,11 +193,13 @@ function filtrarTramos(texto) {
     .slice(0, 8);
 }
 
+// Comprueba si un tramo es un remonte (sube al esquiador)
 function esRemonte(feature) {
   const t = feature.properties.tipo_tramo;
   return t === "telesilla" || t === "telesqui" || t === "telecabina";
 }
 
+// Construye y muestra la lista de sugerencias bajo el campo de texto
 function mostrarDropdown(dropId, resultados, modo) {
   const drop = document.getElementById(dropId);
   drop.innerHTML = "";
@@ -198,8 +211,9 @@ function mostrarDropdown(dropId, resultados, modo) {
 
   resultados.forEach((feature) => {
     const remonte = esRemonte(feature);
-    const difRaw      = feature.properties.dificultad || "";
-    const dif         = difRaw === "Fuera de pista" ? "freeride" : difRaw.toLowerCase();
+    const difRaw = feature.properties.dificultad || "";
+    // Convierte "Fuera de pista" al nombre de clase CSS equivalente
+    const dif = difRaw === "Fuera de pista" ? "freeride" : difRaw.toLowerCase();
     const etiquetaDif = difRaw;
 
     const item = document.createElement("div");
@@ -225,12 +239,13 @@ function mostrarDropdown(dropId, resultados, modo) {
   drop.style.display = "block";
 }
 
+// Oculta ambos desplegables de autocompletado
 function cerrarDropdowns() {
   document.getElementById("dropOrigen").style.display = "none";
   document.getElementById("dropDestino").style.display = "none";
 }
 
-// ── Eventos de inputs ────────────────────────────────────────────────────────
+// Al enfocar un campo, activa el modo de selección correspondiente
 document
   .getElementById("inputOrigen")
   .addEventListener("focus", () => activarModo("origen"));
@@ -238,6 +253,7 @@ document
   .getElementById("inputDestino")
   .addEventListener("focus", () => activarModo("destino"));
 
+// Al escribir en un campo, actualiza las sugerencias del desplegable
 document.getElementById("inputOrigen").addEventListener("input", (e) => {
   mostrarDropdown("dropOrigen", filtrarTramos(e.target.value), "origen");
 });
@@ -245,6 +261,7 @@ document.getElementById("inputDestino").addEventListener("input", (e) => {
   mostrarDropdown("dropDestino", filtrarTramos(e.target.value), "destino");
 });
 
+// Botón × para limpiar el campo de origen
 document.getElementById("clearOrigen").addEventListener("click", () => {
   document.getElementById("inputOrigen").value = "";
   if (capasResaltadas.origen) {
@@ -256,6 +273,8 @@ document.getElementById("clearOrigen").addEventListener("click", () => {
   cerrarDropdowns();
   actualizarBotonCalcular();
 });
+
+// Botón × para limpiar el campo de destino
 document.getElementById("clearDestino").addEventListener("click", () => {
   document.getElementById("inputDestino").value = "";
   if (capasResaltadas.destino) {
@@ -268,7 +287,7 @@ document.getElementById("clearDestino").addEventListener("click", () => {
   actualizarBotonCalcular();
 });
 
-// cerrar al clicar fuera del panel
+// Cierra los desplegables al hacer clic fuera del panel
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".punto-row")) {
     cerrarDropdowns();
@@ -276,7 +295,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// click en mapa vacío → desactivar modo
+// Al hacer clic en el mapa desactiva el modo de selección activo
 map.on("click", () => {
   if (modoActivo) {
     desactivarModo();
@@ -284,7 +303,7 @@ map.on("click", () => {
   }
 });
 
-// ── Selector de dificultad máxima ────────────────────────────────────────────
+// Selector de dificultad máxima: marca el botón activo y guarda el valor
 document.querySelectorAll(".btn-dif").forEach((btn) => {
   btn.addEventListener("click", () => {
     document
@@ -295,20 +314,22 @@ document.querySelectorAll(".btn-dif").forEach((btn) => {
   });
 });
 
-// ── Modal de error ───────────────────────────────────────────────────────────
+// Muestra el modal de error con el mensaje indicado
 function mostrarError(texto) {
   document.getElementById("errorTexto").innerText = texto;
   document.getElementById("errorOverlay").style.display = "flex";
 }
 
+// Cierra el modal de error al pulsar el botón
 document.getElementById("errorBtn").addEventListener("click", () => {
   document.getElementById("errorOverlay").style.display = "none";
 });
 
-// ── Calcular y pintar ruta ───────────────────────────────────────────────────
+// URL base de la API del backend
 const API_URL = "http://localhost:8001";
 let capasRuta = [];
 
+// Envía la solicitud de ruta al backend y pinta el resultado en el mapa
 document.getElementById("btnCalcular").addEventListener("click", async () => {
   const btn = document.getElementById("btnCalcular");
   btn.disabled = true;
@@ -362,6 +383,7 @@ document.getElementById("btnCalcular").addEventListener("click", async () => {
   }
 });
 
+// Restaura el estilo original de todas las capas que formaban la ruta anterior
 function limpiarRuta() {
   capasRuta.forEach((layer) => capaGeoJSON.resetStyle(layer));
   capasRuta = [];
@@ -369,19 +391,20 @@ function limpiarRuta() {
   if (itinerario) itinerario.style.display = "none";
 }
 
+// Pinta en el mapa los tramos de la ruta calculada
 function pintarRuta(tramos, distancia) {
   limpiarRuta();
 
   const idsRuta = new Set(tramos.map((t) => t.id_tramo));
 
-  // Incluir también el nombre del origen y destino seleccionados
+  // Recoge los nombres del origen y destino para pintar también sus segmentos completos
   const nombresExtras = new Set();
   if (seleccion.origen?.properties?.nombre)
     nombresExtras.add(seleccion.origen.properties.nombre);
   if (seleccion.destino?.properties?.nombre)
     nombresExtras.add(seleccion.destino.properties.nombre);
 
-  // Paso 1: recoger los nombres de las capas que coinciden por ID
+  // Paso 1: reúne todos los nombres de tramos que aparecen en la ruta por ID
   const nombresRuta = new Set([...nombresExtras]);
   capaGeoJSON.eachLayer((layer) => {
     const props = layer.feature?.properties;
@@ -390,7 +413,7 @@ function pintarRuta(tramos, distancia) {
     }
   });
 
-  // Paso 2: pintar capas de la ruta (naranja) y origen/destino (su color resaltado)
+  // Paso 2: pinta en naranja los tramos de la ruta y con color resaltado el origen y destino
   capaGeoJSON.eachLayer((layer) => {
     const props = layer.feature?.properties;
     if (!props) return;
@@ -407,10 +430,10 @@ function pintarRuta(tramos, distancia) {
     }
   });
 
-  // Mostrar itinerario en el panel
   mostrarItinerario(tramos, distancia);
 }
 
+// Construye y muestra la lista de pasos del itinerario en el panel inferior
 function mostrarItinerario(tramos, distancia) {
   const contenedor = document.getElementById("itinerario");
   const lista = document.getElementById("itinerarioLista");
@@ -418,14 +441,14 @@ function mostrarItinerario(tramos, distancia) {
 
   lista.innerHTML = "";
 
-  // Agrupar tramos consecutivos con el mismo nombre
+  // Agrupa tramos consecutivos con el mismo nombre para no repetir pasos en el itinerario
   const tramosAgrupados = tramos.reduce((acc, t) => {
     const feature = todosLosTramos.find(
       (f) => f.properties.id_tramo === t.id_tramo,
     );
     const nombre = feature?.properties?.nombre || t.id_tramo;
     const ultimo = acc[acc.length - 1];
-    if (ultimo && ultimo.nombre === nombre) return acc; // mismo nombre consecutivo → ignorar
+    if (ultimo && ultimo.nombre === nombre) return acc;
     acc.push({ ...t, nombre });
     return acc;
   }, []);
@@ -459,8 +482,7 @@ function mostrarItinerario(tramos, distancia) {
   contenedor.style.display = "block";
 }
 
-// ── Cargar GeoJSON ───────────────────────────────────────────────────────────
-// ── Aviso cierre de remontes ─────────────────────────────────────────────────
+// Comprueba la hora actual y muestra un aviso si los remontes están a punto de cerrar
 (function comprobarCierreRemontes() {
   const AVISOS = [
     {
@@ -478,14 +500,12 @@ function mostrarItinerario(tramos, distancia) {
   ];
 
   const ahora = new Date();
-  const hh = ahora.getHours();
-  const mm = ahora.getMinutes();
-  const minutos = hh * 60 + mm;
+  const minutos = ahora.getHours() * 60 + ahora.getMinutes();
 
+  // Busca si la hora actual cae dentro de la ventana de alguno de los avisos
   const aviso = AVISOS.find((a) => {
     const inicio = a.hora * 60 + a.min;
-    const fin = inicio + 29;
-    return minutos >= inicio && minutos <= fin;
+    return minutos >= inicio && minutos <= inicio + 29;
   });
 
   if (!aviso) return;
@@ -498,6 +518,7 @@ function mostrarItinerario(tramos, distancia) {
   });
 })();
 
+// Carga el GeoJSON de la estación y lo añade al mapa con los estilos de pista
 fetch("data/" + estacion + "/tramos.geojson")
   .then((res) => res.json())
   .then((data) => {
