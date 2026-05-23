@@ -326,7 +326,7 @@ document.getElementById("errorBtn").addEventListener("click", () => {
 });
 
 // URL base de la API del backend
-const API_URL = "http://localhost:8001";
+const API_URL = "https://skiroute-api.onrender.com";
 let capasRuta = [];
 
 // Envía la solicitud de ruta al backend y pinta el resultado en el mapa
