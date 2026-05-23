@@ -1,23 +1,24 @@
-/* ===========================
-   RESET & BASE
-   =========================== */
-*, *::before, *::after {
+/* Reset general */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+/* Base */
+html,
+body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   background: #f1f5f9;
   color: #1a1a2e;
   overflow: hidden;
 }
 
-/* ===========================
-   LANDING PAGE
-   =========================== */
+/* Página de inicio */
 .landing {
   height: 100vh;
   display: flex;
@@ -79,7 +80,7 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* Station cards */
+/* Tarjetas de estaciones */
 .estaciones {
   display: flex;
   flex-direction: column;
@@ -90,6 +91,7 @@ html, body {
   margin: 0 auto;
 }
 
+/* En pantallas grandes las tarjetas se muestran en rejilla de 3 columnas */
 @media (min-width: 768px) {
   .estaciones {
     display: grid;
@@ -116,7 +118,7 @@ html, body {
   align-items: center;
   gap: 20px;
   width: 100%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .card-estacion:hover,
@@ -160,6 +162,7 @@ html, body {
   gap: 6px;
 }
 
+/* Badges de dificultad en las tarjetas */
 .badge {
   width: 16px;
   height: 16px;
@@ -167,11 +170,21 @@ html, body {
   display: inline-block;
 }
 
-.badge-verde    { background: #16a34a; }
-.badge-azul     { background: #2563eb; }
-.badge-roja     { background: #dc2626; }
-.badge-negra    { background: #111111; }
-.badge-freeride { background: #92400e; }
+.badge-verde {
+  background: #16a34a;
+}
+.badge-azul {
+  background: #2563eb;
+}
+.badge-roja {
+  background: #dc2626;
+}
+.badge-negra {
+  background: #111111;
+}
+.badge-freeride {
+  background: #92400e;
+}
 
 .card-arrow {
   font-size: 20px;
@@ -179,9 +192,7 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ===========================
-   MAP PAGE
-   =========================== */
+/* Mapa */
 #map {
   position: absolute;
   inset: 0;
@@ -190,7 +201,7 @@ html, body {
   z-index: 0;
 }
 
-/* Top bar */
+/* Barra superior con el botón de volver y el nombre de la estación */
 .top-bar {
   position: absolute;
   top: 16px;
@@ -220,7 +231,7 @@ html, body {
   pointer-events: all;
   transition: background 0.2s;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-back:hover {
@@ -235,7 +246,7 @@ html, body {
   border-radius: 12px;
   padding: 8px 16px;
   pointer-events: all;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .top-bar-card .estacion-nombre {
@@ -244,7 +255,7 @@ html, body {
   color: #1a1a2e;
 }
 
-/* Bottom panel */
+/* Panel inferior con los controles de búsqueda de ruta */
 .bottom-panel {
   position: absolute;
   bottom: 0;
@@ -257,7 +268,7 @@ html, body {
   border-radius: 24px 24px 0 0;
   padding: 12px 20px 32px;
   z-index: 1000;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .panel-handle {
@@ -268,6 +279,7 @@ html, body {
   margin: 0 auto 20px;
 }
 
+/* Campos de origen y destino */
 .panel-actions {
   display: flex;
   flex-direction: column;
@@ -275,7 +287,6 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* ── Fila origen / destino ── */
 .punto-row {
   position: relative;
   display: flex;
@@ -285,7 +296,9 @@ html, body {
   border: 1.5px solid #e2e8f0;
   border-radius: 14px;
   padding: 10px 12px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .punto-row.activo {
@@ -299,8 +312,12 @@ html, body {
   line-height: 1;
 }
 
-.dot-origen { color: #22c55e; }
-.dot-destino { color: #ef4444; }
+.dot-origen {
+  color: #22c55e;
+}
+.dot-destino {
+  color: #ef4444;
+}
 
 .punto-input {
   flex: 1;
@@ -329,9 +346,11 @@ html, body {
   transition: color 0.15s;
 }
 
-.btn-clear:hover { color: #475569; }
+.btn-clear:hover {
+  color: #475569;
+}
 
-/* ── Dropdown autocomplete ── */
+/* Desplegable de autocompletado */
 .autocomplete-dropdown {
   display: none;
   position: absolute;
@@ -355,7 +374,9 @@ html, body {
   transition: background 0.15s;
 }
 
-.drop-item:hover { background: #f1f5f9; }
+.drop-item:hover {
+  background: #f1f5f9;
+}
 
 .drop-icono {
   font-size: 13px;
@@ -370,6 +391,7 @@ html, body {
   color: #1a1a2e;
 }
 
+/* Badges de dificultad en el desplegable */
 .drop-badge {
   font-size: 11px;
   font-weight: 600;
@@ -378,14 +400,32 @@ html, body {
   flex-shrink: 0;
 }
 
-.badge-verde   { background: rgba(22, 163, 74,  0.15); color: #16a34a; }
-.badge-azul    { background: rgba(37, 99,  235, 0.15); color: #2563eb; }
-.badge-roja    { background: rgba(220, 38, 38,  0.15); color: #dc2626; }
-.badge-negra   { background: rgba(17,  17, 17,  0.1);  color: #374151; }
-.badge-freeride { background: rgba(146, 64, 14, 0.15); color: #92400e; }
-.badge-remonte  { background: rgba(156,163,175,  0.2); color: #6b7280; }
+.badge-verde {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+}
+.badge-azul {
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
+}
+.badge-roja {
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+}
+.badge-negra {
+  background: rgba(17, 17, 17, 0.1);
+  color: #374151;
+}
+.badge-freeride {
+  background: rgba(146, 64, 14, 0.15);
+  color: #92400e;
+}
+.badge-remonte {
+  background: rgba(156, 163, 175, 0.2);
+  color: #6b7280;
+}
 
-/* ── Selector de dificultad máxima ── */
+/* Selector de dificultad máxima */
 .dificultad-selector {
   margin-bottom: 14px;
 }
@@ -424,12 +464,28 @@ html, body {
   color: #2563eb;
 }
 
-.btn-dif-verde.activo { border-color: #16a34a; background: rgba(22,163,74,0.1);  color: #16a34a; }
-.btn-dif-azul.activo  { border-color: #2563eb; background: rgba(37,99,235,0.1);  color: #2563eb; }
-.btn-dif-roja.activo  { border-color: #dc2626; background: rgba(220,38,38,0.1);  color: #dc2626; }
-.btn-dif-negra.activo { border-color: #374151; background: rgba(17,17,17,0.08);  color: #374151; }
+.btn-dif-verde.activo {
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+.btn-dif-azul.activo {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+.btn-dif-roja.activo {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+.btn-dif-negra.activo {
+  border-color: #374151;
+  background: rgba(17, 17, 17, 0.08);
+  color: #374151;
+}
 
-/* ── Botón calcular ruta ── */
+/* Botón calcular ruta */
 .btn-calcular {
   display: none;
   width: 100%;
@@ -442,14 +498,24 @@ html, body {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
 }
 
-.btn-calcular:hover     { background: #1d4ed8; }
-.btn-calcular:active    { transform: scale(0.98); }
-.btn-calcular:disabled  { background: #93c5fd; cursor: not-allowed; transform: none; }
+.btn-calcular:hover {
+  background: #1d4ed8;
+}
+.btn-calcular:active {
+  transform: scale(0.98);
+}
+.btn-calcular:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+  transform: none;
+}
 
-/* ── Itinerario de ruta ── */
+/* Itinerario de la ruta calculada */
 .itinerario {
   background: #fffbeb;
   border: 1px solid #fcd34d;
@@ -512,8 +578,12 @@ html, body {
   flex-shrink: 0;
 }
 
-.icono-sube { color: #2563eb; }
-.icono-baja { color: #16a34a; }
+.icono-sube {
+  color: #2563eb;
+}
+.icono-baja {
+  color: #16a34a;
+}
 
 .paso-nombre {
   flex: 1;
@@ -521,7 +591,7 @@ html, body {
   color: #1a1a2e;
 }
 
-/* Legend */
+/* Leyenda de colores */
 .leyenda {
   display: flex;
   gap: 16px;
@@ -549,7 +619,7 @@ html, body {
   background: #9ca3af;
 }
 
-/* ── Marcadores A / B en el mapa ── */
+/* Marcadores de origen y destino sobre el mapa */
 .marcador-seleccion {
   width: 26px;
   height: 26px;
@@ -560,14 +630,18 @@ html, body {
   font-size: 12px;
   font-weight: 800;
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   border: 2px solid #ffffff;
 }
 
-.marcador-origen  { background: #2563eb; }
-.marcador-destino { background: #7c3aed; }
+.marcador-origen {
+  background: #2563eb;
+}
+.marcador-destino {
+  background: #7c3aed;
+}
 
-/* ── Aviso cierre remontes ── */
+/* Modales de aviso y error */
 .aviso-overlay {
   position: fixed;
   inset: 0;
@@ -615,16 +689,20 @@ html, body {
   transition: background 0.2s;
 }
 
-.aviso-btn:hover { background: #d97706; }
+.aviso-btn:hover {
+  background: #d97706;
+}
 
-.aviso-btn-error             { background: #dc2626; }
-.aviso-btn-error:hover       { background: #b91c1c; }
+.aviso-btn-error {
+  background: #dc2626;
+}
+.aviso-btn-error:hover {
+  background: #b91c1c;
+}
 
-/* ===========================
-   LEAFLET OVERRIDES
-   =========================== */
+/* Estilos sobre los controles nativos de Leaflet */
 .leaflet-control-attribution {
-  background: rgba(255,255,255,0.8) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
   color: #94a3b8 !important;
   font-size: 10px !important;
 }
@@ -634,7 +712,7 @@ html, body {
 }
 
 .leaflet-control-zoom a {
-  background: rgba(255,255,255,0.9) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   color: #1a1a2e !important;
   border-color: #e2e8f0 !important;
 }
