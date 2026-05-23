@@ -1,17 +1,16 @@
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 import psycopg2
 import networkx as nx
+from config import DB_CONFIG
 
 
 def construir_grafo():
     # Conecta a la base de datos PostgreSQL donde están almacenados
     # los nodos y conexiones de las estaciones de esquí
-    conn = psycopg2.connect(
-        dbname="skiRoute",
-        user="postgres",
-        password="1234asdf",
-        host="localhost",
-        port="5432"
-    )
+    conn = psycopg2.connect(**DB_CONFIG)
 
     cur = conn.cursor()
 
