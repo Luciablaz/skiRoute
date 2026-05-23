@@ -1,14 +1,19 @@
+import os
 import json
 import pandas as pd
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
-# ── Parámetro: estación a importar ───────────────────────────────────────────
+# Carga las credenciales desde el archivo .env
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+# Estación a importar: cambia este valor antes de ejecutar el script
 ESTACION = "Formigal"
 
 nodos_path  = f"../data/Nodos_{ESTACION}.geojson"
 tramos_path = f"../data/Tramos_{ESTACION}.geojson"
 
-# ── Leer nodos ────────────────────────────────────────────────────────────────
+# Lee el GeoJSON de nodos y extrae solo los campos necesarios para la topología
 with open(nodos_path, encoding="utf-8") as f:
     nodos_data = json.load(f)
 
@@ -23,13 +28,14 @@ for feature in nodos_data["features"]:
 
 df_nodos = pd.DataFrame(nodos_rows)
 
-# nodo_inicio = vertex_pos 0, nodo_fin = vertex_pos -1
+# Separa los nodos de inicio (vertex_pos 0) y fin (vertex_pos -1) de cada tramo
 inicio = df_nodos[df_nodos["vertex_pos"] == 0][["id_tramo", "id_nodo"]].rename(columns={"id_nodo": "nodo_inicio"})
 fin    = df_nodos[df_nodos["vertex_pos"] == -1][["id_tramo", "id_nodo"]].rename(columns={"id_nodo": "nodo_fin"})
 
+# Une inicio y fin por id_tramo para construir la topología del grafo
 df_topologia = pd.merge(inicio, fin, on="id_tramo")
 
-# ── Leer tramos ───────────────────────────────────────────────────────────────
+# Lee el GeoJSON de tramos y extrae los atributos de cada uno
 with open(tramos_path, encoding="utf-8") as f:
     tramos_data = json.load(f)
 
@@ -45,12 +51,16 @@ for feature in tramos_data["features"]:
 
 df_tramos = pd.DataFrame(tramos_rows)
 
-# ── Unir topología + atributos ────────────────────────────────────────────────
+# Combina la topología con los atributos para obtener las conexiones completas
 df_conexiones = pd.merge(df_topologia, df_tramos, on="id_tramo")
 
-# ── Subir a PostgreSQL ────────────────────────────────────────────────────────
-engine = create_engine("postgresql://postgres:1234asdf@localhost:5432/skiRoute")
+# Conecta a la base de datos usando las credenciales del archivo .env
+engine = create_engine(
+    f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+    f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+)
 
+# Inserta las conexiones en la tabla, añadiendo a los datos existentes
 df_conexiones.to_sql(
     name="conexiones",
     con=engine,
