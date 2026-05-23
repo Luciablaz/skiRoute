@@ -1,0 +1,722 @@
+/* Reset general */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base */
+html,
+body {
+  height: 100%;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #f1f5f9;
+  color: #1a1a2e;
+  overflow: hidden;
+}
+
+/* Página de inicio */
+.landing {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #e8eef7 0%, #dde6f5 40%, #f1f5f9 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 32px;
+  text-align: center;
+}
+
+.landing-logo {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #2563eb;
+  margin-bottom: 16px;
+}
+
+.landing-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+
+.landing-subtitle {
+  font-size: 16px;
+  color: #64748b;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.landing-divider {
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #6366f1);
+  border-radius: 2px;
+  margin: 32px auto 28px;
+}
+
+.landing-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Tarjetas de estaciones */
+.estaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 48px;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* En pantallas grandes las tarjetas se muestran en rejilla de 3 columnas */
+@media (min-width: 768px) {
+  .estaciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 960px;
+    gap: 20px;
+    padding: 0 32px 48px;
+  }
+
+  .landing-hero {
+    padding: 60px 24px 24px;
+  }
+}
+
+.card-estacion {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card-estacion:hover,
+.card-estacion:focus {
+  background: #f8faff;
+  border-color: #93c5fd;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.card-estacion:active {
+  transform: translateY(0);
+}
+
+.card-icono {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-nombre {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.card-meta {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.card-dificultades {
+  display: flex;
+  gap: 6px;
+}
+
+/* Badges de dificultad en las tarjetas */
+.badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.badge-verde {
+  background: #16a34a;
+}
+.badge-azul {
+  background: #2563eb;
+}
+.badge-roja {
+  background: #dc2626;
+}
+.badge-negra {
+  background: #111111;
+}
+.badge-freeride {
+  background: #92400e;
+}
+
+.card-arrow {
+  font-size: 20px;
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+/* Mapa */
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Barra superior con el botón de volver y el nombre de la estación */
+.top-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1a1a2e;
+  font-size: 18px;
+  pointer-events: all;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back:hover {
+  background: #f0f6ff;
+}
+
+.top-bar-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 16px;
+  pointer-events: all;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar-card .estacion-nombre {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* Panel inferior con los controles de búsqueda de ruta */
+.bottom-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid #e2e8f0;
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px 32px;
+  z-index: 1000;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.panel-handle {
+  width: 36px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+/* Campos de origen y destino */
+.panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.punto-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8faff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.punto-row.activo {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.punto-dot {
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.dot-origen {
+  color: #22c55e;
+}
+.dot-destino {
+  color: #ef4444;
+}
+
+.punto-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a2e;
+  outline: none;
+}
+
+.punto-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.btn-clear {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.btn-clear:hover {
+  color: #475569;
+}
+
+/* Desplegable de autocompletado */
+.autocomplete-dropdown {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.drop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.drop-item:hover {
+  background: #f1f5f9;
+}
+
+.drop-icono {
+  font-size: 13px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.drop-nombre {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+/* Badges de dificultad en el desplegable */
+.drop-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.badge-verde {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+}
+.badge-azul {
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
+}
+.badge-roja {
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+}
+.badge-negra {
+  background: rgba(17, 17, 17, 0.1);
+  color: #374151;
+}
+.badge-freeride {
+  background: rgba(146, 64, 14, 0.15);
+  color: #92400e;
+}
+.badge-remonte {
+  background: rgba(156, 163, 175, 0.2);
+  color: #6b7280;
+}
+
+/* Selector de dificultad máxima */
+.dificultad-selector {
+  margin-bottom: 14px;
+}
+
+.dificultad-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.dificultad-botones {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-dif {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8faff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-dif.activo {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.btn-dif-verde.activo {
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+.btn-dif-azul.activo {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+.btn-dif-roja.activo {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+.btn-dif-negra.activo {
+  border-color: #374151;
+  background: rgba(17, 17, 17, 0.08);
+  color: #374151;
+}
+
+/* Botón calcular ruta */
+.btn-calcular {
+  display: none;
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 16px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+
+.btn-calcular:hover {
+  background: #1d4ed8;
+}
+.btn-calcular:active {
+  transform: scale(0.98);
+}
+.btn-calcular:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Itinerario de la ruta calculada */
+.itinerario {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.itinerario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.itinerario-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.itinerario-distancia {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.itinerario-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itinerario-paso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.paso-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.paso-icono {
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.icono-sube {
+  color: #2563eb;
+}
+.icono-baja {
+  color: #16a34a;
+}
+
+.paso-nombre {
+  flex: 1;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+/* Leyenda de colores */
+.leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.leyenda-linea {
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.leyenda-remonte {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: #9ca3af;
+}
+
+/* Marcadores de origen y destino sobre el mapa */
+.marcador-seleccion {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff;
+}
+
+.marcador-origen {
+  background: #2563eb;
+}
+.marcador-destino {
+  background: #7c3aed;
+}
+
+/* Modales de aviso y error */
+.aviso-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.aviso-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px 24px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+.aviso-icono {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.aviso-texto {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a2e;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.aviso-btn {
+  width: 100%;
+  padding: 13px;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.aviso-btn:hover {
+  background: #d97706;
+}
+
+.aviso-btn-error {
+  background: #dc2626;
+}
+.aviso-btn-error:hover {
+  background: #b91c1c;
+}
+
+/* Estilos sobre los controles nativos de Leaflet */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #2563eb !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1a1a2e !important;
+  border-color: #e2e8f0 !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #f0f6ff !important;
+}

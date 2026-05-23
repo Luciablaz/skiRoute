@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkiRoute</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <div class="landing">
+      <div class="landing-hero">
+        <div class="landing-logo">SkiRoute</div>
+        <h1 class="landing-title">Encuentra tu<br />ruta perfecta</h1>
+        <p class="landing-subtitle">
+          Planifica tu descenso en las mejores estaciones de esquí de España
+        </p>
+      </div>
+
+      <div class="landing-divider"></div>
+
+      <p class="landing-section-title">Selecciona estación</p>
+
+      <div class="estaciones">
+        <button class="card-estacion" onclick="seleccionar('valdesqui')">
+          <div class="card-icono">⛷️</div>
+          <div class="card-info">
+            <div class="card-nombre">Valdesquí</div>
+            <div class="card-meta">Rascafría, Madrid</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+<button class="card-estacion" onclick="seleccionar('cerler')">
+          <div class="card-icono">🎿</div>
+          <div class="card-info">
+            <div class="card-nombre">Cerler</div>
+            <div class="card-meta">Benasque, Huesca</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+        <button class="card-estacion" onclick="seleccionar('formigal')">
+          <div class="card-icono">⛷️</div>
+          <div class="card-info">
+            <div class="card-nombre">Formigal</div>
+            <div class="card-meta">Sallent de Gállego, Huesca</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+        <button class="card-estacion" onclick="seleccionar('astun')">
+          <div class="card-icono">🏔️</div>
+          <div class="card-info">
+            <div class="card-nombre">Astún</div>
+            <div class="card-meta">Jaca, Huesca</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+        <button class="card-estacion" onclick="seleccionar('candanchu')">
+          <div class="card-icono">⛷️</div>
+          <div class="card-info">
+            <div class="card-nombre">Candanchú</div>
+            <div class="card-meta">Aísa, Huesca</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+
+        <button class="card-estacion" onclick="seleccionar('panticosa')">
+          <div class="card-icono">🏔️</div>
+          <div class="card-info">
+            <div class="card-nombre">Panticosa</div>
+            <div class="card-meta">Panticosa, Huesca</div>
+            <div class="card-dificultades">
+              <span class="badge badge-verde"></span>
+              <span class="badge badge-azul"></span>
+              <span class="badge badge-roja"></span>
+              <span class="badge badge-negra"></span>
+            </div>
+          </div>
+          <div class="card-arrow">›</div>
+        </button>
+      </div>
+    </div>
+
+    <script src="js/selector_estacion.js"></script>
+  </body>
+</html>
