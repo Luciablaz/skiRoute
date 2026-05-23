@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const estacion = params.get("estacion") || "valdesqui";
 
 const centros = {
+  formigal:  [42.77341, -0.40996],
   astun:     [42.80391, -0.49816],
   candanchu: [42.78284, -0.53733],
   valdesqui: [40.79, -3.97],
@@ -11,6 +12,7 @@ const centros = {
 };
 
 const nombres = {
+  formigal:  "Formigal",
   astun:     "Astún",
   candanchu: "Candanchú",
   valdesqui: "Valdesquí",
