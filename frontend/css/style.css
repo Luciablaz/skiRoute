@@ -90,6 +90,20 @@ html, body {
   margin: 0 auto;
 }
 
+@media (min-width: 768px) {
+  .estaciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 960px;
+    gap: 20px;
+    padding: 0 32px 48px;
+  }
+
+  .landing-hero {
+    padding: 60px 24px 24px;
+  }
+}
+
 .card-estacion {
   background: #ffffff;
   border: 1px solid #e2e8f0;
