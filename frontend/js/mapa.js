@@ -295,6 +295,23 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// El handle colapsa y expande el panel al hacer clic
+// Alterna entre el itinerario del panel y el flotante si hay ruta calculada
+document.getElementById("panelHandle").addEventListener("click", () => {
+  const panel = document.getElementById("bottomPanel");
+  panel.classList.toggle("colapsado");
+  const colapsado = panel.classList.contains("colapsado");
+
+  const flotante = document.getElementById("itinerario");
+  const panelItinerario = document.getElementById("itinerarioPanel");
+  const hayRuta = flotante.dataset.tieneRuta === "true";
+
+  if (hayRuta) {
+    flotante.style.display = colapsado ? "block" : "none";
+    panelItinerario.style.display = colapsado ? "none" : "block";
+  }
+});
+
 // Al hacer clic en el mapa desactiva el modo de selección activo
 map.on("click", () => {
   if (modoActivo) {
@@ -388,7 +405,12 @@ function limpiarRuta() {
   capasRuta.forEach((layer) => capaGeoJSON.resetStyle(layer));
   capasRuta = [];
   const itinerario = document.getElementById("itinerario");
-  if (itinerario) itinerario.style.display = "none";
+  if (itinerario) {
+    itinerario.style.display = "none";
+    itinerario.dataset.tieneRuta = "false";
+  }
+  const panelItinerario = document.getElementById("itinerarioPanel");
+  if (panelItinerario) panelItinerario.style.display = "none";
 }
 
 // Pinta en el mapa los tramos de la ruta calculada
@@ -433,15 +455,8 @@ function pintarRuta(tramos, distancia) {
   mostrarItinerario(tramos, distancia);
 }
 
-// Construye y muestra la lista de pasos del itinerario en el panel inferior
-function mostrarItinerario(tramos, distancia) {
-  const contenedor = document.getElementById("itinerario");
-  const lista = document.getElementById("itinerarioLista");
-  const dist = document.getElementById("itinerarioDistancia");
-
-  lista.innerHTML = "";
-
-  // Agrupa tramos consecutivos con el mismo nombre para no repetir pasos en el itinerario
+// Construye los pasos del itinerario y devuelve el HTML generado
+function construirPasosItinerario(tramos) {
   const tramosAgrupados = tramos.reduce((acc, t) => {
     const feature = todosLosTramos.find(
       (f) => f.properties.id_tramo === t.id_tramo,
@@ -453,33 +468,41 @@ function mostrarItinerario(tramos, distancia) {
     return acc;
   }, []);
 
-  tramosAgrupados.forEach((t, i) => {
-    const nombre = t.nombre;
+  return tramosAgrupados.map((t, i) => {
     const tipoLower = (t.tipo_tramo || "").toLowerCase();
-    const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(
-      tipoLower,
-    );
+    const esRemonte = ["telesilla", "telesqui", "telecabina"].includes(tipoLower);
     const dif = (t.dificultad || "").toLowerCase();
-
-    const paso = document.createElement("div");
-    paso.className = "itinerario-paso";
-    paso.innerHTML = `
-      <span class="paso-num">${i + 1}</span>
-      <span class="paso-icono ${esRemonte ? "icono-sube" : "icono-baja"}">${esRemonte ? "▲" : "▼"}</span>
-      <span class="paso-nombre">${nombre}</span>
-      ${
-        esRemonte
+    return `
+      <div class="itinerario-paso">
+        <span class="paso-num">${i + 1}</span>
+        <span class="paso-icono ${esRemonte ? "icono-sube" : "icono-baja"}">${esRemonte ? "▲" : "▼"}</span>
+        <span class="paso-nombre">${t.nombre}</span>
+        ${esRemonte
           ? `<span class="drop-badge badge-remonte">${t.tipo_tramo}</span>`
           : t.dificultad
             ? `<span class="drop-badge badge-${t.dificultad === "Fuera de pista" ? "freeride" : dif}">${t.dificultad}</span>`
-            : ""
-      }
-    `;
-    lista.appendChild(paso);
-  });
+            : ""}
+      </div>`;
+  }).join("");
+}
 
-  dist.textContent = `Distancia total: ${(distancia / 1000).toFixed(2)} km`;
-  contenedor.style.display = "block";
+// Muestra el itinerario en el panel (expandido) o flotante (colapsado) según el estado
+function mostrarItinerario(tramos, distancia) {
+  const panelColapsado = document.getElementById("bottomPanel").classList.contains("colapsado");
+  const html = construirPasosItinerario(tramos);
+  const distTexto = `Distancia total: ${(distancia / 1000).toFixed(2)} km`;
+
+  // Rellena y muestra el itinerario del panel
+  document.getElementById("itinerarioListaPanel").innerHTML = html;
+  document.getElementById("itinerarioDistanciaPanel").textContent = distTexto;
+  document.getElementById("itinerarioPanel").style.display = panelColapsado ? "none" : "block";
+
+  // Rellena y muestra el itinerario flotante
+  document.getElementById("itinerarioLista").innerHTML = html;
+  document.getElementById("itinerarioDistancia").textContent = distTexto;
+  const flotante = document.getElementById("itinerario");
+  flotante.dataset.tieneRuta = "true";
+  flotante.style.display = panelColapsado ? "block" : "none";
 }
 
 // Comprueba la hora actual y muestra un aviso si los remontes están a punto de cerrar
