@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 # Estación a importar
-ESTACION = "Cerler"
+ESTACION = "Valdesqui"
 
 nodos_path  = f"../data/Nodos_{ESTACION}.geojson"
 tramos_path = f"../data/Tramos_{ESTACION}.geojson"
