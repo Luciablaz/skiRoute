@@ -299,8 +299,11 @@ document.addEventListener("click", (e) => {
 // Alterna entre el itinerario del panel y el flotante si hay ruta calculada
 document.getElementById("panelHandle").addEventListener("click", () => {
   const panel = document.getElementById("bottomPanel");
+  const handle = document.getElementById("panelHandle");
   panel.classList.toggle("colapsado");
   const colapsado = panel.classList.contains("colapsado");
+  // Flecha abajo cuando está expandido, flecha arriba cuando está colapsado
+  handle.innerHTML = colapsado ? "↑" : "↓";
 
   const flotante = document.getElementById("itinerario");
   const panelItinerario = document.getElementById("itinerarioPanel");
