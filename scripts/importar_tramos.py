@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 # Carga las credenciales desde el archivo .env
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-# Estación a importar: cambia este valor antes de ejecutar el script
-ESTACION = "Formigal"
+# Estación a importar
+ESTACION = "Cerler"
 
 nodos_path  = f"../data/Nodos_{ESTACION}.geojson"
 tramos_path = f"../data/Tramos_{ESTACION}.geojson"
